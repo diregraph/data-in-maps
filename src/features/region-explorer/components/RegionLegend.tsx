@@ -3,6 +3,9 @@
 import { FRAMEWORKS, CONTINENT_ORDER } from "@/features/world-map/data/frameworks"
 import type { FrameworkKey, RegionData } from "../types"
 
+/** Frameworks that group legend items by their `cont` field */
+const GROUPED_FRAMEWORKS = new Set<FrameworkKey>(["un"])
+
 interface LegendItemProps {
   id: string
   region: RegionData
@@ -43,11 +46,9 @@ interface RegionLegendProps {
 export default function RegionLegend({ framework, onSelect, selectedRegion }: RegionLegendProps) {
   const { regions } = FRAMEWORKS[framework]
 
-  if (framework === "un") {
+  if (GROUPED_FRAMEWORKS.has(framework)) {
     const groups: Record<string, [string, RegionData][]> = {}
-    CONTINENT_ORDER.forEach(c => {
-      groups[c] = []
-    })
+    CONTINENT_ORDER.forEach(c => { groups[c] = [] })
     Object.entries(regions).forEach(([id, r]) => {
       if (groups[r.cont]) groups[r.cont].push([id, r])
     })

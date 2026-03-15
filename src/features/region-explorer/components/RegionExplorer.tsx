@@ -4,9 +4,8 @@ import { useState, useRef, useCallback } from "react"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { FRAMEWORKS, COMING_SOON } from "@/features/world-map/data/frameworks"
+import { FRAMEWORKS } from "@/features/world-map/data/frameworks"
 import RegionMapSVG from "./RegionMapSVG"
 import RegionTooltip from "./RegionTooltip"
 import RegionLegend from "./RegionLegend"
@@ -72,36 +71,17 @@ export default function RegionExplorer() {
         </div>
 
         {/* Framework Selector */}
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="space-y-2">
           <Tabs value={framework} onValueChange={handleFrameworkChange}>
-            <TabsList className="h-9">
-              {Object.entries(FRAMEWORKS).map(([key, fw]) => (
-                <TabsTrigger key={key} value={key} className="text-sm px-4 font-medium">
-                  {fw.label}
+            <TabsList className="h-9 w-full overflow-x-auto justify-start scrollbar-none [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+              {(Object.keys(FRAMEWORKS) as FrameworkKey[]).map(key => (
+                <TabsTrigger key={key} value={key} className="text-sm px-3 font-medium shrink-0">
+                  {FRAMEWORKS[key].label}
                 </TabsTrigger>
               ))}
             </TabsList>
           </Tabs>
-
-          <Select onValueChange={() => {}}>
-            <SelectTrigger className="w-60 h-9 text-sm text-muted-foreground">
-              <SelectValue placeholder="More frameworks" />
-            </SelectTrigger>
-            <SelectContent>
-              {COMING_SOON.map(f => (
-                <SelectItem key={f.value} value={f.value} disabled className="py-2">
-                  <div className="flex items-center gap-2 w-full">
-                    <span className="text-muted-foreground">{f.label}</span>
-                    <Badge variant="secondary" className="text-xs ml-auto">
-                      Soon
-                    </Badge>
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <p className="text-xs text-muted-foreground hidden sm:block ml-auto italic">
+          <p className="text-xs text-muted-foreground italic">
             {FRAMEWORKS[framework].desc}
           </p>
         </div>

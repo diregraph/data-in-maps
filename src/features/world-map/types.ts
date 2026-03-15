@@ -31,7 +31,7 @@ export interface Framework {
   pins: RegionPin[]
 }
 
-export type FrameworkKey = "world" | "un"
+export type FrameworkKey = "world" | "un" | "cultural" | "geopolitical" | "historical" | "religious" | "ecological"
 export type FrameworkMap = Record<FrameworkKey, Framework>
 
 export interface TooltipState {
