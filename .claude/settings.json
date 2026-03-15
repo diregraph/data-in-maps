@@ -44,7 +44,10 @@
       "WebFetch(domain:data.worldbank.org)",
       "WebFetch(domain:www.csis.org)",
       "WebFetch(domain:www.britannica.com)",
-      "WebFetch(domain:ourworldindata.org)"
+      "WebFetch(domain:ourworldindata.org)",
+      "Bash(npx shadcn@latest add toggle-group)",
+      "Bash(node -e \"const tg = require\\(''/Users/diregraph/Downloads/dev/data-in-maps/node_modules/@base-ui/react/toggle-group''\\); console.log\\(Object.keys\\(tg\\)\\)\")",
+      "Bash(node -e \":*)"
     ],
     "deny": [
       "Bash(git push --force:*)",
