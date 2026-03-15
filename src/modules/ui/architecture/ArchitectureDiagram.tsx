@@ -2,12 +2,26 @@
 
 import type { NodeId } from "./nodes"
 
+const NODE_BOUNDS: Record<NodeId, { x: number; y: number; w: number; h: number }> = {
+  "app-router":       { x: 190, y: 20,  w: 300, h: 44 },
+  "ai":               { x: 28,  y: 104, w: 140, h: 60 },
+  "data":             { x: 185, y: 104, w: 140, h: 60 },
+  "layers":           { x: 342, y: 104, w: 140, h: 60 },
+  "map":              { x: 499, y: 104, w: 149, h: 60 },
+  "ui":               { x: 28,  y: 204, w: 283, h: 60 },
+  "export":           { x: 369, y: 204, w: 283, h: 60 },
+  "claude-api":       { x: 28,  y: 302, w: 180, h: 56 },
+  "tile-provider":    { x: 250, y: 302, w: 180, h: 56 },
+  "browser-storage":  { x: 472, y: 302, w: 180, h: 56 },
+}
+
 interface ArchitectureDiagramProps {
   onNodeClick: (id: NodeId) => void
   activeNodeId?: NodeId
+  pendingNodeId?: NodeId
 }
 
-export function ArchitectureDiagram({ onNodeClick, activeNodeId }: ArchitectureDiagramProps) {
+export function ArchitectureDiagram({ onNodeClick, activeNodeId, pendingNodeId }: ArchitectureDiagramProps) {
   function hl(id: NodeId): React.SVGProps<SVGRectElement> {
     return activeNodeId === id
       ? { stroke: "rgb(255,255,255)", strokeWidth: 2 }
@@ -550,6 +564,37 @@ export function ArchitectureDiagram({ onNodeClick, activeNodeId }: ArchitectureD
       <text x="460" y="395" dominantBaseline="central" fill="rgb(194, 192, 182)" fontSize="12">
         ╌╌ external data flow
       </text>
+
+      {/* Spinner overlay on the pending node */}
+      {pendingNodeId && (() => {
+        const b = NODE_BOUNDS[pendingNodeId]
+        const cx = b.x + b.w / 2
+        const cy = b.y + b.h / 2
+        return (
+          <g style={{ pointerEvents: "none" }}>
+            <rect x={b.x} y={b.y} width={b.w} height={b.h} rx="8" fill="rgba(0,0,0,0.45)" />
+            <g transform={`translate(${cx},${cy})`}>
+              <circle
+                r="11"
+                fill="none"
+                stroke="rgba(255,255,255,0.9)"
+                strokeWidth="2.5"
+                strokeDasharray="28 48"
+                strokeLinecap="round"
+              >
+                <animateTransform
+                  attributeName="transform"
+                  type="rotate"
+                  from="0"
+                  to="360"
+                  dur="0.75s"
+                  repeatCount="indefinite"
+                />
+              </circle>
+            </g>
+          </g>
+        )
+      })()}
     </svg>
   )
 }
