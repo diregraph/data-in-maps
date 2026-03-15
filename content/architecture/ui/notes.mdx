@@ -1,0 +1,31 @@
+# Design the ui module (design system) for the map platform. What shared components are needed at launch, and how should theming work?
+
+## Overview
+
+_Placeholder — describe the ui module as the platform's design system layer, built on top of shadcn/ui and Tailwind v4, providing shared components and tokens consumed by all features._
+
+## Folder structure
+
+```
+src/modules/ui/
+├── index.ts             # barrel: re-exports all shared components
+├── architecture/        # ArchitectureDiagram, NodeDetailPanel
+├── components/
+│   ├── Spinner.tsx
+│   ├── ErrorBoundary.tsx
+│   └── EmptyState.tsx
+└── tokens.ts            # design tokens (colors, radii, spacing)
+```
+
+## Key decisions
+
+- _Placeholder — e.g. how shadcn/ui components are extended vs. used as-is, dark mode approach, token strategy with Tailwind CSS variables._
+
+## Interfaces
+
+```ts
+// Placeholder — shared prop shapes and token types
+export interface ThemeTokens {
+  // ...
+}
+```

@@ -1,0 +1,86 @@
+# Architecture Notes
+
+## Mental model — the pipeline
+
+Every user interaction flows left to right through one mental model:
+```
+User input → ai → data → layers → map → export
+```
+The `ui` module is a horizontal concern — a design system used by everything. Every other module is vertical: self-contained, with a single job, communicating only through its `index.ts` surface.
+
+## Folder structure
+
+```
+src/
+├── app/                          # Next.js App Router
+│   ├── (map)/
+│   │   └── page.tsx              # Primary map canvas
+│   └── api/
+│       ├── ai/route.ts           # AI endpoint — API key stays server-side
+│       └── export/route.ts
+│
+├── modules/
+│   ├── ai/
+│   │   ├── prompts/              # Versioned prompt templates
+│   │   ├── client.ts             # Anthropic SDK wrapper
+│   │   ├── hooks/useAIGenerate.ts
+│   │   └── index.ts              # ← only public surface
+│   │
+│   ├── data/
+│   │   ├── parsers/              # csv.ts  geojson.ts  url.ts
+│   │   ├── validators/schema.ts  # Zod — validates AI output AND user uploads
+│   │   ├── hooks/useDataSource.ts
+│   │   └── index.ts
+│   │
+│   ├── layers/
+│   │   ├── components/           # LayerList, LayerEditor
+│   │   ├── store.ts              # Zustand slice
+│   │   └── index.ts
+│   │
+│   ├── map/
+│   │   ├── components/
+│   │   │   └── MapCanvas.tsx     # MapLibre GL JS wrapper
+│   │   ├── store.ts              # Viewport + render state (source of truth)
+│   │   └── index.ts
+│   │
+│   ├── export/
+│   │   ├── exporters/            # png.ts  svg.ts  embed.ts
+│   │   └── index.ts
+│   │
+│   └── ui/                       # Design system — Button, Panel, Input …
+│       └── index.ts
+│
+├── lib/                           # Pure utilities. No React. No side effects.
+│   ├── geo.ts                     # GeoJSON helpers
+│   ├── color.ts                   # Color scale utilities
+│   └── storage.ts                 # localStorage wrapper
+│
+└── types/                         # Global TypeScript contracts
+    ├── map.ts
+    └── data.ts
+```
+
+## Tech stack (minimal viable, designed to swap)
+
+| Concern | Choice | Rationale |
+|---------|--------|-----------|
+| Map renderer | MapLibre GL JS | OSS, WebGL, zero Mapbox lock-in |
+| Tiles | PMTiles + OSM fallback | Self-hostable, no API key needed to start |
+| State | Zustand | One slice per module, no boilerplate |
+| Data fetching | TanStack Query | Caching, loading states, retries for free |
+| Validation | Zod | Runtime safety on AI output + user data |
+| AI | Anthropic Claude (via `/api/ai`) | Keys never touch the client |
+| Styling | Tailwind CSS + shadcn | Low cognitive overhead for contributors |
+
+## Three rules every contributor must feel intuitively
+
+1. **`index.ts` is the module's contract.** Never import from inside a module (`@/modules/data/parsers/csv`). Only from its `index.ts`. This makes internal refactoring invisible to the rest of the app.
+
+2. **AI output is always validated before it touches the map.** The `ai` module returns a raw config shape. It never writes to `layers` or `map` state. Everything goes through `data/validators/schema.ts` first — a hallucinated field crashes the validator, not the canvas.
+
+3. **Modules own their state; no store imports across module boundaries.** The `map` module is the single source of truth for viewport and render state. Cross-module coordination happens via callbacks or React context — never by importing another module's `store.ts` directly.
+
+## What to build first
+
+Start with `map` + `layers` alone (static GeoJSON upload → rendered map). Add `ai` only once the non-AI path is solid. This keeps the app stable and testable at every step, which is exactly in the spirit of the mission.
+

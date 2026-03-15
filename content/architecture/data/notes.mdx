@@ -1,0 +1,33 @@
+# Design the data module for the map platform. What parsers are needed, how should Zod validation work, and how does it validate AI-generated output before it reaches the map?
+
+## Overview
+
+_Placeholder — describe the data module's role as the ingest and parse boundary: all external data (API responses, uploaded files, AI output) passes through here before reaching the map._
+
+## Folder structure
+
+```
+src/modules/data/
+├── index.ts             # barrel: exports parsers and schemas
+├── schemas/
+│   ├── map-config.ts    # Zod schema for AI-generated map config
+│   ├── region.ts        # Zod schema for region/country data
+│   └── geojson.ts       # Zod schema for GeoJSON feature collections
+├── parsers/
+│   ├── csv.ts           # CSV → GeoJSON feature collection
+│   └── geojson.ts       # raw GeoJSON → validated FeatureCollection
+└── types.ts             # ParseResult<T>, ParseError
+```
+
+## Key decisions
+
+- _Placeholder — e.g. fail-fast vs. partial validation, how parse errors surface to the UI, whether Zod schemas are shared with the ai module._
+
+## Interfaces
+
+```ts
+// Placeholder
+export type ParseResult<T> =
+  | { ok: true; data: T }
+  | { ok: false; errors: string[] }
+```

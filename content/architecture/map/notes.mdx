@@ -1,0 +1,32 @@
+# Design the map module for the map platform. How should MapLibre GL JS be wrapped, what belongs in store.ts, and how should viewport state be managed?
+
+## Overview
+
+_Placeholder — describe the map module: a thin React wrapper around MapLibre GL JS via react-map-gl, with a Zustand store for viewport and map instance state._
+
+## Folder structure
+
+```
+src/modules/map/
+├── index.ts             # barrel: exports MapCanvas, useMapStore
+├── MapCanvas.tsx        # "use client" — react-map-gl Map wrapper
+├── store.ts             # Zustand: viewport, mapRef, flyTo action
+├── hooks/
+│   └── useMapInstance.ts
+└── types.ts             # Viewport, MapRef
+```
+
+## Key decisions
+
+- _Placeholder — e.g. controlled vs. uncontrolled viewport, SSR guard strategy, how layers module subscribes to map readiness._
+
+## Interfaces
+
+```ts
+// Placeholder
+export interface Viewport {
+  longitude: number
+  latitude: number
+  zoom: number
+}
+```

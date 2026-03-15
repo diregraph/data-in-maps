@@ -1,0 +1,30 @@
+# How should the Claude API integration be handled server-side in Next.js for the map platform? What prompt structure works best for generating map config from natural language?
+
+## Overview
+
+_Placeholder — describe the server-side integration: a Next.js Route Handler calls the Anthropic SDK, keeping the API key server-only and returning validated JSON to the client._
+
+## Folder structure
+
+```
+src/app/api/
+└── generate-map/
+    └── route.ts         # POST handler: receives query, returns MapConfig
+
+src/modules/ai/
+├── client.ts            # Anthropic SDK initialisation (server-only)
+└── prompt.ts            # system prompt + user message builders
+```
+
+## Key decisions
+
+- _Placeholder — e.g. model selection, temperature, tool use vs. structured output, token budget, error handling for malformed model responses._
+
+## Interfaces
+
+```ts
+// Placeholder
+// POST /api/generate-map
+// Body:  { query: string }
+// Reply: { config: MapConfig } | { error: string }
+```

@@ -1,0 +1,30 @@
+# What should be persisted in browser storage for the map platform? How should the storage wrapper in lib/storage.ts be designed?
+
+## Overview
+
+_Placeholder — describe what state warrants persistence (saved maps, user preferences) and how a typed storage wrapper centralises all localStorage/sessionStorage access._
+
+## Folder structure
+
+```
+src/lib/
+└── storage.ts           # typed get/set/remove over localStorage
+
+src/modules/map/
+└── store.ts             # Zustand persist middleware uses storage wrapper
+```
+
+## Key decisions
+
+- _Placeholder — e.g. which Zustand stores opt into persistence, versioning/migration strategy for stored schemas, whether IndexedDB is needed for large GeoJSON._
+
+## Interfaces
+
+```ts
+// Placeholder
+export interface StorageAdapter {
+  get<T>(key: string): T | null
+  set<T>(key: string, value: T): void
+  remove(key: string): void
+}
+```

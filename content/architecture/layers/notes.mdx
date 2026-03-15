@@ -1,0 +1,36 @@
+# Design the layers module for the map platform. How should layer state be managed with Zustand, and what visual encoding types should be supported initially?
+
+## Overview
+
+_Placeholder — describe the layers module: it owns the ordered stack of map layers and their style configuration, bridging parsed data and the map renderer._
+
+## Folder structure
+
+```
+src/modules/layers/
+├── index.ts             # barrel: exports store, types, encoding helpers
+├── store.ts             # Zustand store: layerStack, add/remove/reorder
+├── encodings/
+│   ├── choropleth.ts    # fill-color ramp by data value
+│   ├── bubble.ts        # circle-radius by data value
+│   └── categorical.ts   # fill-color by category
+└── types.ts             # Layer, LayerEncoding, EncodingType
+```
+
+## Key decisions
+
+- _Placeholder — e.g. immutable layer records vs. mutable, encoding union type strategy, how layers map to MapLibre layer spec._
+
+## Interfaces
+
+```ts
+// Placeholder
+export type EncodingType = "choropleth" | "bubble" | "categorical"
+
+export interface Layer {
+  id: string
+  sourceId: string
+  encoding: EncodingType
+  // ...
+}
+```

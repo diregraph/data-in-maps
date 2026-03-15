@@ -1,0 +1,35 @@
+# Design the export module for the map platform. How should PNG, SVG, and embed link exports work? What does it need from the map and layers modules?
+
+## Overview
+
+_Placeholder — describe the export module: it reads from the map and layers modules to produce static image exports and shareable embed links._
+
+## Folder structure
+
+```
+src/modules/export/
+├── index.ts             # barrel: exports exportPng, exportSvg, buildEmbedUrl
+├── png.ts               # MapLibre canvas → PNG blob via canvas.toBlob
+├── svg.ts               # SVG serialisation of current map state
+├── embed.ts             # serialise viewport + layers to URL-safe params
+└── types.ts             # ExportOptions, EmbedConfig
+```
+
+## Key decisions
+
+- _Placeholder — e.g. how to handle WebGL canvas cross-origin constraints for PNG, SVG fidelity limitations, embed link schema versioning._
+
+## Interfaces
+
+```ts
+// Placeholder
+export interface ExportOptions {
+  format: "png" | "svg"
+  width?: number
+  height?: number
+}
+
+export interface EmbedConfig {
+  url: string
+}
+```

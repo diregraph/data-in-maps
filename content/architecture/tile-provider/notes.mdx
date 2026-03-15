@@ -1,0 +1,32 @@
+# How should tile provider support be architected for the map platform? How do we support PMTiles self-hosted, OSM, and optional Mapbox with a single clean interface?
+
+## Overview
+
+_Placeholder — describe the tile provider abstraction: a single config object selects the active provider, and a resolver function returns the MapLibre style or source config for that provider._
+
+## Folder structure
+
+```
+src/modules/map/
+└── tile-providers/
+    ├── index.ts         # resolveTileProvider(config) → MapLibre source/style
+    ├── pmtiles.ts       # PMTiles protocol handler + source config
+    ├── osm.ts           # OSM raster tile source config
+    └── mapbox.ts        # Mapbox GL style URL builder (optional/env-gated)
+```
+
+## Key decisions
+
+- _Placeholder — e.g. how to gate Mapbox behind an env var, PMTiles protocol registration lifecycle, whether the provider config lives in the map store or a separate config file._
+
+## Interfaces
+
+```ts
+// Placeholder
+export type TileProviderType = "pmtiles" | "osm" | "mapbox"
+
+export interface TileProviderConfig {
+  type: TileProviderType
+  url?: string
+}
+```

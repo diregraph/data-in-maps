@@ -1,0 +1,33 @@
+# Design the ai module for the map platform. What should its folder structure look like, what does its index.ts expose, and how should it interact with Claude API server-side?
+
+## Overview
+
+_Placeholder — describe the role of the ai module: translating natural-language prompts into validated map configuration objects via the Claude API._
+
+## Folder structure
+
+```
+src/modules/ai/
+├── index.ts             # barrel: exports prompt, parseMapConfig
+├── prompt.ts            # system prompt + user prompt builders
+├── client.ts            # server-side Anthropic SDK wrapper
+├── parse.ts             # extracts structured output from model response
+└── types.ts             # MapConfigRequest, MapConfigResponse
+```
+
+## Key decisions
+
+- _Placeholder — e.g. server-only constraint, streaming vs. single-shot, prompt versioning strategy._
+
+## Interfaces
+
+```ts
+// Placeholder
+export interface MapConfigRequest {
+  query: string
+}
+
+export interface MapConfigResponse {
+  // validated map configuration
+}
+```
