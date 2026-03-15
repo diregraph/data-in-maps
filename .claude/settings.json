@@ -19,7 +19,12 @@
       "Bash(npm run *)",
       "Bash(npx *)",
       "Bash(gh issue *)",
-      "Bash(gh pr *)"
+      "Bash(gh pr *)",
+      "Bash(ls *)",
+      "Bash(npm install:*)",
+      "Bash(npx shadcn:*)",
+      "Bash(npm run:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": [
       "Bash(git push --force:*)",

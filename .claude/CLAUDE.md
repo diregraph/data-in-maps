@@ -56,6 +56,12 @@ Before implementing anything, formulate a plan and surface it to the user for ex
 - Map components (`src/components/map/`) are client-side only — always use `"use client"` or a dynamic import wrapper to avoid SSR errors with MapLibre GL JS.
 - Always implement loading and error states for components relying on async data.
 - Run `npm run lint` and `npm run format` before every commit.
+- Use canonical Tailwind v3/v4 class names. Never use deprecated aliases:
+  - `shrink-0` not `flex-shrink-0`
+  - `shrink` not `flex-shrink`
+  - `grow` not `flex-grow`
+  - `grow-0` not `flex-grow-0`
+  - `text-ellipsis` not `overflow-ellipsis`
 
 ### Safety & Data Integrity
 
