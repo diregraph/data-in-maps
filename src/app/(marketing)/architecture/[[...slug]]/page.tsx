@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+
 import { ArchitecturePage } from "@/modules/ui/architecture"
 import { getNodeBySlug } from "@/modules/ui/architecture"
 
@@ -6,7 +7,9 @@ interface PageProps {
   params: Promise<{ slug?: string[] }>
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   const { slug } = await params
   const node = slug ? getNodeBySlug(slug) : null
 
@@ -14,7 +17,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: node
       ? `${node.label} — Architecture — Data In Maps`
       : "Architecture — Data In Maps",
-    description: node?.prompt ?? "Interactive diagram of the Data In Maps system architecture.",
+    description:
+      node?.prompt ??
+      "Interactive diagram of the Data In Maps system architecture.",
   }
 }
 

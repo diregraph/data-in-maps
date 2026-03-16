@@ -1,7 +1,9 @@
 "use client"
 
 import { useState, useTransition } from "react"
+
 import { useRouter } from "next/navigation"
+
 import { ArchitectureDiagram } from "./ArchitectureDiagram"
 import { AppRouterDiagram } from "./app-router/AppRouterDiagram"
 import { ExportDiagram } from "./export/ExportDiagram"
@@ -19,13 +21,13 @@ type DiagramComponent = React.ComponentType<{
 }>
 
 const DIAGRAMS: Record<string, DiagramComponent> = {
-  root:            ArchitectureDiagram as unknown as DiagramComponent,
-  "app-router":    AppRouterDiagram    as unknown as DiagramComponent,
-  export:          ExportDiagram       as unknown as DiagramComponent,
-  layers:          LayersDiagram       as unknown as DiagramComponent,
-  map:             MapDiagram          as unknown as DiagramComponent,
+  root: ArchitectureDiagram as unknown as DiagramComponent,
+  "app-router": AppRouterDiagram as unknown as DiagramComponent,
+  export: ExportDiagram as unknown as DiagramComponent,
+  layers: LayersDiagram as unknown as DiagramComponent,
+  map: MapDiagram as unknown as DiagramComponent,
   "tile-provider": TileProviderDiagram as unknown as DiagramComponent,
-  ui:              UiDiagram           as unknown as DiagramComponent,
+  ui: UiDiagram as unknown as DiagramComponent,
 }
 
 interface DiagramViewerProps {
@@ -34,7 +36,11 @@ interface DiagramViewerProps {
   activeNodeId?: string
 }
 
-export function DiagramViewer({ viewerKey, basePath, activeNodeId }: DiagramViewerProps) {
+export function DiagramViewer({
+  viewerKey,
+  basePath,
+  activeNodeId,
+}: DiagramViewerProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [pendingNodeId, setPendingNodeId] = useState<string | null>(null)

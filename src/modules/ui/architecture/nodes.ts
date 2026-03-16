@@ -1,72 +1,72 @@
 export type NodeId =
-  | 'app-router'
-  | 'ai'
-  | 'data'
-  | 'layers'
-  | 'map'
-  | 'ui'
-  | 'export'
-  | 'claude-api'
-  | 'tile-provider'
-  | 'browser-storage'
+  | "app-router"
+  | "ai"
+  | "data"
+  | "layers"
+  | "map"
+  | "ui"
+  | "export"
+  | "claude-api"
+  | "tile-provider"
+  | "browser-storage"
 
 export type AppRouterNodeId =
-  | 'layout'
-  | 'map-group'
-  | 'marketing-group'
-  | 'api'
-  | 'map-page'
-  | 'maps-id'
-  | 'marketing-page'
-  | 'gallery'
-  | 'ai-route'
-  | 'export-route'
-  | 'loading'
-  | 'error'
-  | 'not-found'
-  | 'opengraph-image'
-  | 'sitemap'
+  | "layout"
+  | "map-group"
+  | "marketing-group"
+  | "api"
+  | "map-page"
+  | "maps-id"
+  | "marketing-page"
+  | "gallery"
+  | "ai-route"
+  | "export-route"
+  | "loading"
+  | "error"
+  | "not-found"
+  | "opengraph-image"
+  | "sitemap"
 
 export type TileProviderNodeId =
-  | 'map-canvas'
-  | 'tile-provider-interface'
-  | 'pmtiles-provider'
-  | 'osm-provider'
-  | 'mapbox-provider'
-  | 'create-tile-provider'
+  | "map-canvas"
+  | "tile-provider-interface"
+  | "pmtiles-provider"
+  | "osm-provider"
+  | "mapbox-provider"
+  | "create-tile-provider"
 
 export type LayersNodeId =
-  | 'types'
-  | 'store'
-  | 'choropleth'
-  | 'bubble'
-  | 'categorical'
-  | 'layer-list'
-  | 'layer-editor'
+  | "types"
+  | "store"
+  | "choropleth"
+  | "bubble"
+  | "categorical"
+  | "layer-list"
+  | "layer-editor"
 
 export type MapNodeId =
-  | 'types'
-  | 'map-canvas'
-  | 'store'
-  | 'use-map-instance'
-  | 'use-fly-to'
-  | 'use-layer-sync'
+  | "types"
+  | "map-canvas"
+  | "store"
+  | "use-map-instance"
+  | "use-fly-to"
+  | "use-layer-sync"
 
 export type ExportNodeId =
-  | 'export-panel'
-  | 'use-export'
-  | 'png-exporter'
-  | 'svg-exporter'
-  | 'embed-link'
-  | 'api-route'
+  | "export-panel"
+  | "use-export"
+  | "png-exporter"
+  | "svg-exporter"
+  | "embed-link"
+  | "api-route"
 
 export type UiNodeId =
-  | 'theme'
-  | 'button'
-  | 'sheet'
-  | 'form'
-  | 'toast'
-  | 'custom'
+  | "theme"
+  | "button"
+  | "sheet"
+  | "form"
+  | "toast"
+  | "custom"
 
 export interface ArchNodeConfig {
   label: string
@@ -76,257 +76,302 @@ export interface ArchNodeConfig {
 }
 
 export const NODES: Record<NodeId, ArchNodeConfig> = {
-  'app-router': {
-    label: 'Next.js app router',
+  "app-router": {
+    label: "Next.js app router",
     prompt:
-      'How should the Next.js App Router be set up for an open-source map platform? What pages, route groups, and API routes are needed?',
-    viewerKey: 'app-router',
+      "How should the Next.js App Router be set up for an open-source map platform? What pages, route groups, and API routes are needed?",
+    viewerKey: "app-router",
     children: {
       layout: {
-        label: 'app/layout.tsx',
-        prompt: 'What goes in the root layout.tsx for the map platform? What providers wrap the app?',
+        label: "app/layout.tsx",
+        prompt:
+          "What goes in the root layout.tsx for the map platform? What providers wrap the app?",
       },
-      'map-group': {
-        label: '(map)',
-        prompt: 'What is the (map) route group responsible for in the map platform? What shared layout does it provide?',
+      "map-group": {
+        label: "(map)",
+        prompt:
+          "What is the (map) route group responsible for in the map platform? What shared layout does it provide?",
       },
-      'marketing-group': {
-        label: '(marketing)',
-        prompt: 'What pages live in the (marketing) route group for the map platform? What is its layout?',
+      "marketing-group": {
+        label: "(marketing)",
+        prompt:
+          "What pages live in the (marketing) route group for the map platform? What is its layout?",
       },
       api: {
-        label: 'api/',
-        prompt: 'What is the api/ directory responsible for in the map platform app router?',
+        label: "api/",
+        prompt:
+          "What is the api/ directory responsible for in the map platform app router?",
       },
-      'map-page': {
-        label: '(map)/page.tsx',
-        prompt: 'What does the main editor page look like at (map)/page.tsx? What components does it render?',
+      "map-page": {
+        label: "(map)/page.tsx",
+        prompt:
+          "What does the main editor page look like at (map)/page.tsx? What components does it render?",
       },
-      'maps-id': {
-        label: 'maps/[id]',
-        prompt: 'How should shared map routes like /maps/[id] work in the map platform? What does the dynamic route fetch?',
+      "maps-id": {
+        label: "maps/[id]",
+        prompt:
+          "How should shared map routes like /maps/[id] work in the map platform? What does the dynamic route fetch?",
       },
-      'marketing-page': {
-        label: '(marketing)/page.tsx',
-        prompt: 'What does the landing page for the map platform look like? What sections should it have?',
+      "marketing-page": {
+        label: "(marketing)/page.tsx",
+        prompt:
+          "What does the landing page for the map platform look like? What sections should it have?",
       },
       gallery: {
-        label: 'gallery',
-        prompt: 'What example maps should the gallery page show? How is it structured?',
+        label: "gallery",
+        prompt:
+          "What example maps should the gallery page show? How is it structured?",
       },
-      'ai-route': {
-        label: 'api/ai/',
-        prompt: 'Design the api/ai/route.ts endpoint for the map platform. What does the request body look like, and what does it return?',
+      "ai-route": {
+        label: "api/ai/",
+        prompt:
+          "Design the api/ai/route.ts endpoint for the map platform. What does the request body look like, and what does it return?",
       },
-      'export-route': {
-        label: 'api/export/',
-        prompt: 'Design the api/export/route.ts endpoint. How does it handle PNG and SVG export server-side?',
+      "export-route": {
+        label: "api/export/",
+        prompt:
+          "Design the api/export/route.ts endpoint. How does it handle PNG and SVG export server-side?",
       },
       loading: {
-        label: 'loading.tsx',
-        prompt: 'What should the loading.tsx fallback look like for the map route group?',
+        label: "loading.tsx",
+        prompt:
+          "What should the loading.tsx fallback look like for the map route group?",
       },
       error: {
-        label: 'error.tsx',
-        prompt: 'What should error.tsx handle for the map platform route groups?',
+        label: "error.tsx",
+        prompt:
+          "What should error.tsx handle for the map platform route groups?",
       },
-      'not-found': {
-        label: 'not-found.tsx',
-        prompt: 'What does the not-found.tsx page look like for the map platform?',
+      "not-found": {
+        label: "not-found.tsx",
+        prompt:
+          "What does the not-found.tsx page look like for the map platform?",
       },
-      'opengraph-image': {
-        label: 'opengraph-image',
-        prompt: 'What metadata and Open Graph tags should be in app/opengraph-image.tsx for sharing map links?',
+      "opengraph-image": {
+        label: "opengraph-image",
+        prompt:
+          "What metadata and Open Graph tags should be in app/opengraph-image.tsx for sharing map links?",
       },
       sitemap: {
-        label: 'sitemap.ts',
-        prompt: 'What should sitemap.ts generate for the map platform?',
+        label: "sitemap.ts",
+        prompt: "What should sitemap.ts generate for the map platform?",
       },
     },
   },
   ai: {
-    label: 'ai',
+    label: "ai",
     prompt:
-      'Design the ai module for the map platform. What should its folder structure look like, what does its index.ts expose, and how should it interact with Claude API server-side?',
+      "Design the ai module for the map platform. What should its folder structure look like, what does its index.ts expose, and how should it interact with Claude API server-side?",
   },
   data: {
-    label: 'data',
+    label: "data",
     prompt:
-      'Design the data module for the map platform. What parsers are needed, how should Zod validation work, and how does it validate AI-generated output before it reaches the map?',
+      "Design the data module for the map platform. What parsers are needed, how should Zod validation work, and how does it validate AI-generated output before it reaches the map?",
   },
   layers: {
-    label: 'layers',
+    label: "layers",
     prompt:
-      'Design the layers module for the map platform. How should layer state be managed with Zustand, and what visual encoding types should be supported initially?',
-    viewerKey: 'layers',
+      "Design the layers module for the map platform. How should layer state be managed with Zustand, and what visual encoding types should be supported initially?",
+    viewerKey: "layers",
     children: {
       types: {
-        label: 'types.ts',
-        prompt: 'Show me the full TypeScript contracts for the layers module: Layer, EncodingType, and the LayerEncoding union type.',
+        label: "types.ts",
+        prompt:
+          "Show me the full TypeScript contracts for the layers module: Layer, EncodingType, and the LayerEncoding union type.",
       },
       store: {
-        label: 'store.ts',
-        prompt: 'Show me the Zustand store for the layers module. How is the ordered layer stack managed, and what CRUD operations does it expose?',
+        label: "store.ts",
+        prompt:
+          "Show me the Zustand store for the layers module. How is the ordered layer stack managed, and what CRUD operations does it expose?",
       },
       choropleth: {
-        label: 'choropleth',
-        prompt: 'Show me the choropleth encoding implementation. How does buildChoroplethPaint() translate a ChoroplethEncoding into a MapLibre fill-color expression?',
+        label: "choropleth",
+        prompt:
+          "Show me the choropleth encoding implementation. How does buildChoroplethPaint() translate a ChoroplethEncoding into a MapLibre fill-color expression?",
       },
       bubble: {
-        label: 'bubble',
-        prompt: 'Show me the bubble encoding implementation. How does buildBubblePaint() scale circle-radius by a numeric data field?',
+        label: "bubble",
+        prompt:
+          "Show me the bubble encoding implementation. How does buildBubblePaint() scale circle-radius by a numeric data field?",
       },
       categorical: {
-        label: 'categorical',
-        prompt: 'Show me the categorical encoding implementation. How does buildCategoricalPaint() map discrete string values to fill colors?',
+        label: "categorical",
+        prompt:
+          "Show me the categorical encoding implementation. How does buildCategoricalPaint() map discrete string values to fill colors?",
       },
-      'layer-list': {
-        label: 'LayerList',
-        prompt: 'Show me the LayerList component. How does it render the ordered layer stack and handle drag-to-reorder?',
+      "layer-list": {
+        label: "LayerList",
+        prompt:
+          "Show me the LayerList component. How does it render the ordered layer stack and handle drag-to-reorder?",
       },
-      'layer-editor': {
-        label: 'LayerEditor',
-        prompt: 'Show me the LayerEditor component. How does it render encoding configuration controls for the active layer?',
+      "layer-editor": {
+        label: "LayerEditor",
+        prompt:
+          "Show me the LayerEditor component. How does it render encoding configuration controls for the active layer?",
       },
     },
   },
   map: {
-    label: 'map',
+    label: "map",
     prompt:
-      'Design the map module for the map platform. How should MapLibre GL JS be wrapped, what belongs in store.ts, and how should viewport state be managed?',
-    viewerKey: 'map',
+      "Design the map module for the map platform. How should MapLibre GL JS be wrapped, what belongs in store.ts, and how should viewport state be managed?",
+    viewerKey: "map",
     children: {
       types: {
-        label: 'types.ts',
-        prompt: 'Show me the full TypeScript contracts for the map module: Viewport, MapState, and MapRef.',
+        label: "types.ts",
+        prompt:
+          "Show me the full TypeScript contracts for the map module: Viewport, MapState, and MapRef.",
       },
-      'map-canvas': {
-        label: 'MapCanvas',
-        prompt: 'Show me the MapCanvas component. How does it wrap react-map-gl, sync with the Zustand store, and guard against SSR?',
+      "map-canvas": {
+        label: "MapCanvas",
+        prompt:
+          "Show me the MapCanvas component. How does it wrap react-map-gl, sync with the Zustand store, and guard against SSR?",
       },
       store: {
-        label: 'store.ts',
-        prompt: 'Show me the Zustand store for the map module. How is viewport state managed, and how does flyTo work without writing animation state?',
+        label: "store.ts",
+        prompt:
+          "Show me the Zustand store for the map module. How is viewport state managed, and how does flyTo work without writing animation state?",
       },
-      'use-map-instance': {
-        label: 'useMapInstance',
-        prompt: 'Show me the useMapInstance hook. How does it expose the raw MapLibre GL JS instance to other hooks?',
+      "use-map-instance": {
+        label: "useMapInstance",
+        prompt:
+          "Show me the useMapInstance hook. How does it expose the raw MapLibre GL JS instance to other hooks?",
       },
-      'use-fly-to': {
-        label: 'useFlyTo',
-        prompt: 'Show me the useFlyTo hook. How does it wrap the store flyTo action for consumer use?',
+      "use-fly-to": {
+        label: "useFlyTo",
+        prompt:
+          "Show me the useFlyTo hook. How does it wrap the store flyTo action for consumer use?",
       },
-      'use-layer-sync': {
-        label: 'useLayerSync',
-        prompt: 'Show me the useLayerSync hook. How does it subscribe to the layers store and apply changes to the MapLibre instance with minimal diff calls?',
+      "use-layer-sync": {
+        label: "useLayerSync",
+        prompt:
+          "Show me the useLayerSync hook. How does it subscribe to the layers store and apply changes to the MapLibre instance with minimal diff calls?",
       },
     },
   },
   ui: {
-    label: 'ui',
+    label: "ui",
     prompt:
-      'Design the ui module (design system) for the map platform. What shared components are needed at launch, and how should theming work?',
-    viewerKey: 'ui',
+      "Design the ui module (design system) for the map platform. What shared components are needed at launch, and how should theming work?",
+    viewerKey: "ui",
     children: {
       theme: {
-        label: 'theme.css',
-        prompt: 'Show me the full theme.css for the map platform. What CSS custom properties does shadcn require, and how is dark mode configured?',
+        label: "theme.css",
+        prompt:
+          "Show me the full theme.css for the map platform. What CSS custom properties does shadcn require, and how is dark mode configured?",
       },
       button: {
-        label: 'Button',
-        prompt: 'Show me how Button (shadcn) is used across the map platform. What variants are needed and where is each used?',
+        label: "Button",
+        prompt:
+          "Show me how Button (shadcn) is used across the map platform. What variants are needed and where is each used?",
       },
       sheet: {
-        label: 'Sheet',
-        prompt: 'Show me how Sheet (shadcn) is used as the primary sidebar container. How does LayerList, ExportPanel, and the AI chat use it?',
+        label: "Sheet",
+        prompt:
+          "Show me how Sheet (shadcn) is used as the primary sidebar container. How does LayerList, ExportPanel, and the AI chat use it?",
       },
       form: {
-        label: 'Form',
-        prompt: 'Show me the shadcn Form setup with react-hook-form and Zod. How does LayerEditor use Input, Select, and Slider for encoding config?',
+        label: "Form",
+        prompt:
+          "Show me the shadcn Form setup with react-hook-form and Zod. How does LayerEditor use Input, Select, and Slider for encoding config?",
       },
       toast: {
-        label: 'Sonner',
-        prompt: 'Show me the Sonner (shadcn) integration. How are toasts triggered from hooks for export success, AI errors, and save confirmations?',
+        label: "Sonner",
+        prompt:
+          "Show me the Sonner (shadcn) integration. How are toasts triggered from hooks for export success, AI errors, and save confirmations?",
       },
       custom: {
-        label: 'custom components',
-        prompt: 'Show me the custom platform-specific components not covered by shadcn: ColorRamp, EmptyState, and Spinner.',
+        label: "custom components",
+        prompt:
+          "Show me the custom platform-specific components not covered by shadcn: ColorRamp, EmptyState, and Spinner.",
       },
     },
   },
   export: {
-    label: 'export',
+    label: "export",
     prompt:
-      'Design the export module for the map platform. How should PNG, SVG, and embed link exports work? What does it need from the map and layers modules?',
-    viewerKey: 'export',
+      "Design the export module for the map platform. How should PNG, SVG, and embed link exports work? What does it need from the map and layers modules?",
+    viewerKey: "export",
     children: {
-      'export-panel': {
-        label: 'ExportPanel',
-        prompt: 'Show me the ExportPanel component. What format options does it expose and how does it trigger the export action?',
+      "export-panel": {
+        label: "ExportPanel",
+        prompt:
+          "Show me the ExportPanel component. What format options does it expose and how does it trigger the export action?",
       },
-      'use-export': {
-        label: 'useExport',
-        prompt: 'Show me the useExport hook. How does it read from the map and layers stores and delegate to the three client-side exporters?',
+      "use-export": {
+        label: "useExport",
+        prompt:
+          "Show me the useExport hook. How does it read from the map and layers stores and delegate to the three client-side exporters?",
       },
-      'png-exporter': {
-        label: 'png.ts',
-        prompt: 'Show me the PNG exporter. How does it read the MapLibre WebGL canvas and return a data URL? What constraint does preserveDrawingBuffer impose?',
+      "png-exporter": {
+        label: "png.ts",
+        prompt:
+          "Show me the PNG exporter. How does it read the MapLibre WebGL canvas and return a data URL? What constraint does preserveDrawingBuffer impose?",
       },
-      'svg-exporter': {
-        label: 'svg.ts',
-        prompt: 'Show me the SVG exporter. How does it serialize GeoJSON layer features into SVG path elements without the tile basemap?',
+      "svg-exporter": {
+        label: "svg.ts",
+        prompt:
+          "Show me the SVG exporter. How does it serialize GeoJSON layer features into SVG path elements without the tile basemap?",
       },
-      'embed-link': {
-        label: 'embed.ts',
-        prompt: 'Show me the embed link exporter. How does it encode viewport and layer config into a shareable URL?',
+      "embed-link": {
+        label: "embed.ts",
+        prompt:
+          "Show me the embed link exporter. How does it encode viewport and layer config into a shareable URL?",
       },
-      'api-route': {
-        label: 'api/export/',
-        prompt: 'Show me the api/export/route.ts endpoint. How does it render a map PNG server-side for OG images and permalink previews?',
+      "api-route": {
+        label: "api/export/",
+        prompt:
+          "Show me the api/export/route.ts endpoint. How does it render a map PNG server-side for OG images and permalink previews?",
       },
     },
   },
-  'claude-api': {
-    label: 'Claude API',
+  "claude-api": {
+    label: "Claude API",
     prompt:
-      'How should the Claude API integration be handled server-side in Next.js for the map platform? What prompt structure works best for generating map config from natural language?',
+      "How should the Claude API integration be handled server-side in Next.js for the map platform? What prompt structure works best for generating map config from natural language?",
   },
-  'tile-provider': {
-    label: 'Tile provider',
+  "tile-provider": {
+    label: "Tile provider",
     prompt:
-      'How should tile provider support be architected for the map platform? How do we support PMTiles self-hosted, OSM, and optional Mapbox with a single clean interface?',
-    viewerKey: 'tile-provider',
+      "How should tile provider support be architected for the map platform? How do we support PMTiles self-hosted, OSM, and optional Mapbox with a single clean interface?",
+    viewerKey: "tile-provider",
     children: {
-      'map-canvas': {
-        label: 'MapCanvas (consumer)',
-        prompt: 'How does the MapCanvas component consume the tile provider interface? Show me the React integration.',
+      "map-canvas": {
+        label: "MapCanvas (consumer)",
+        prompt:
+          "How does the MapCanvas component consume the tile provider interface? Show me the React integration.",
       },
-      'tile-provider-interface': {
-        label: 'TileProvider interface',
-        prompt: 'Show me the full TileProvider TypeScript interface for the map platform, including the TileSourceConfig type it returns.',
+      "tile-provider-interface": {
+        label: "TileProvider interface",
+        prompt:
+          "Show me the full TileProvider TypeScript interface for the map platform, including the TileSourceConfig type it returns.",
       },
-      'pmtiles-provider': {
-        label: 'PMTilesProvider',
-        prompt: 'Show me the full PMTilesProvider implementation. How does it self-host tiles using the pmtiles protocol plugin for MapLibre?',
+      "pmtiles-provider": {
+        label: "PMTilesProvider",
+        prompt:
+          "Show me the full PMTilesProvider implementation. How does it self-host tiles using the pmtiles protocol plugin for MapLibre?",
       },
-      'osm-provider': {
-        label: 'OSMProvider',
-        prompt: 'Show me the OSMProvider implementation. What tile URL template and attribution string does it use?',
+      "osm-provider": {
+        label: "OSMProvider",
+        prompt:
+          "Show me the OSMProvider implementation. What tile URL template and attribution string does it use?",
       },
-      'mapbox-provider': {
-        label: 'MapboxProvider',
-        prompt: 'Show me the MapboxProvider implementation. How does it pull the API key from env and what style URLs does it support?',
+      "mapbox-provider": {
+        label: "MapboxProvider",
+        prompt:
+          "Show me the MapboxProvider implementation. How does it pull the API key from env and what style URLs does it support?",
       },
-      'create-tile-provider': {
-        label: 'createTileProvider()',
-        prompt: 'Show me the createTileProvider factory function. How does it read NEXT_PUBLIC_TILE_PROVIDER and NEXT_PUBLIC_MAPBOX_TOKEN to pick the right provider?',
+      "create-tile-provider": {
+        label: "createTileProvider()",
+        prompt:
+          "Show me the createTileProvider factory function. How does it read NEXT_PUBLIC_TILE_PROVIDER and NEXT_PUBLIC_MAPBOX_TOKEN to pick the right provider?",
       },
     },
   },
-  'browser-storage': {
-    label: 'Browser storage',
+  "browser-storage": {
+    label: "Browser storage",
     prompt:
-      'What should be persisted in browser storage for the map platform? How should the storage wrapper in lib/storage.ts be designed?',
+      "What should be persisted in browser storage for the map platform? How should the storage wrapper in lib/storage.ts be designed?",
   },
 }
 

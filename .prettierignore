@@ -1,0 +1,31 @@
+# Mirror of .gitignore
+node_modules
+.pnp
+.pnp.*
+.yarn
+
+# Next.js build outputs
+.next
+out
+build
+
+# Environment files
+.env*
+
+# Lock files — let the package manager own these
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Generated / compiled
+*.tsbuildinfo
+next-env.d.ts
+
+# OS noise
+.DS_Store
+
+# Vercel
+.vercel
+
+# Certificates
+*.pem

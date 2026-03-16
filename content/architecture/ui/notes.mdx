@@ -63,19 +63,20 @@ Always use the CLI — never copy-paste manually:
 npx shadcn@latest add button sheet input select slider label form sonner
 ```
 
-| Component | Used by |
-|-----------|---------|
-| `Button` | everywhere — primary actions, toolbar, dialogs |
-| `Sheet` | LayerList panel, ExportPanel, AI chat sidebar |
-| `Input / Select / Slider` | LayerEditor encoding config |
-| `Form` (react-hook-form) | LayerEditor — field binding + Zod validation |
-| `Sonner` | export success, AI errors, save confirmations |
+| Component                 | Used by                                        |
+| ------------------------- | ---------------------------------------------- |
+| `Button`                  | everywhere — primary actions, toolbar, dialogs |
+| `Sheet`                   | LayerList panel, ExportPanel, AI chat sidebar  |
+| `Input / Select / Slider` | LayerEditor encoding config                    |
+| `Form` (react-hook-form)  | LayerEditor — field binding + Zod validation   |
+| `Sonner`                  | export success, AI errors, save confirmations  |
 
 ## Custom components
 
 Components that shadcn doesn't provide:
 
 **ColorRamp** — gradient swatch for choropleth scale preview:
+
 ```tsx
 export function ColorRamp({ colors }: { colors: string[] }) {
   const gradient = `linear-gradient(to right, ${colors.join(", ")})`
@@ -84,8 +85,13 @@ export function ColorRamp({ colors }: { colors: string[] }) {
 ```
 
 **EmptyState** — zero-data placeholder for LayerList and Gallery:
+
 ```tsx
-export function EmptyState({ icon: Icon, title, description }: EmptyStateProps) {
+export function EmptyState({
+  icon: Icon,
+  title,
+  description,
+}: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center gap-2 py-12 text-muted-foreground">
       <Icon className="h-8 w-8" />

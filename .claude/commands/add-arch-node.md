@@ -18,6 +18,7 @@ Read `content/architecture/notes.mdx` and `src/modules/ui/architecture/nodes.ts`
 Read `src/modules/ui/architecture/nodes.ts`. Locate the node at `$ARGUMENTS` by walking the `NODES` tree along the slash-separated segments.
 
 Extract:
+
 - `label` — display name
 - `prompt` — the design question this node answers
 - Whether it already has `viewerKey` and `children` (already expanded — stop and tell the user)
@@ -29,6 +30,7 @@ Also check `content/architecture/$ARGUMENTS/` for any existing `notes.mdx` or `.
 ## Step 2 — Assess and propose
 
 Based on the node's `prompt`, decide whether it warrants an **interactive sub-diagram**. A diagram is appropriate when the node:
+
 - Decomposes into 4 or more distinct sub-components, OR
 - Has a clear data flow, dependency hierarchy, or layered structure that benefits from a visual
 
@@ -61,10 +63,11 @@ If the user refines the sub-nodes or the diagram decision, update the proposal a
 Write `content/architecture/$ARGUMENTS/notes.mdx`.
 
 The file should answer the node's `prompt` concisely and authoritatively. Structure:
+
 - `# <label>` heading
 - A short paragraph explaining the component's role
 - Code-heavy sections: folder structure, key interfaces/types, implementation snippets
-- A "Key decisions" section explaining *why* the design is the way it is
+- A "Key decisions" section explaining _why_ the design is the way it is
 - Keep it scannable — engineers should get the full picture in 2 minutes
 
 Tone: precise, opinionated, reference-quality. No filler prose.
@@ -76,6 +79,7 @@ Tone: precise, opinionated, reference-quality. No filler prose.
 Write the reference SVG to `content/architecture/$ARGUMENTS/<node-slug>.svg`.
 
 The SVG must match the visual language of the existing diagrams:
+
 - Background: `#1a1916`
 - Font: `"Anthropic Sans", -apple-system, "system-ui", "Segoe UI", sans-serif`
 - Node rects: `rx="8"`, `strokeWidth="0.5"`

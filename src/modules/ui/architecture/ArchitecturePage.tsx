@@ -1,7 +1,8 @@
 import Link from "next/link"
+
 import { DiagramViewer } from "./DiagramViewer"
 import { NodeContent } from "./NodeContent"
-import { getNodeBySlug, NODES } from "./nodes"
+import { NODES, getNodeBySlug } from "./nodes"
 import type { ArchNodeConfig } from "./nodes"
 
 interface ArchitecturePageProps {
@@ -40,7 +41,7 @@ function resolveViewer(slug: string[]) {
 
 export function ArchitecturePage({ slug }: ArchitecturePageProps) {
   return (
-    <main className="bg-[#1a1916] min-h-screen">
+    <main className="min-h-screen bg-[#1a1916]">
       <nav
         aria-label="Breadcrumb"
         className="flex items-center gap-1.5 px-8 pt-6 pb-2 text-sm text-[rgb(156,154,146)]"

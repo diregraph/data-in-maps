@@ -12,6 +12,7 @@ When the user asks to update a GitHub issue, follow these steps:
    - If the user describes the update directly, use that.
 
 2. **Review the current issue state.**
+
    ```bash
    gh issue view $ARGUMENTS
    ```
@@ -27,6 +28,7 @@ When the user asks to update a GitHub issue, follow these steps:
      ```
 
 4. **Apply the update.**
+
    ```bash
    gh issue edit $ARGUMENTS --body-file /tmp/issue-<number>-update.md
    ```

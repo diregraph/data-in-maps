@@ -20,6 +20,7 @@ When the user asks to create a GitHub issue, follow these steps:
 
 3. **Write the issue body to a temp file.**
    - Create `/tmp/issue-<task-name>.md` with the following structure:
+
      ```
      ## Goal
      <what this issue achieves>
@@ -33,6 +34,7 @@ When the user asks to create a GitHub issue, follow these steps:
      ```
 
 4. **Create the issue.**
+
    ```bash
    gh issue create --title "<title>" --body-file /tmp/issue-<task-name>.md [--label <labels>] [--assignee <assignee>]
    ```

@@ -29,17 +29,20 @@ Before implementing anything, formulate a plan and surface it to the user for ex
 ### Git Discipline
 
 **Commit messages:** Strictly follow [Conventional Commits](https://www.conventionalcommits.org/).
+
 - Format: `<type>(<scope>): <description>`
 - Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`
 - Scope: map to the domain changed (e.g., `map`, `countries`, `ui`, `seo`)
 - Description: imperative, terse (e.g., `add country hover tooltip`, not `added tooltip`)
 
 **Branching:** Feature branches merge directly into `main`. No `develop` branch.
+
 - Features: `feature/DIM-[id]-[short-description]`
 - Bug fixes: `fix/DIM-[id]-[short-description]`
 - Chores: `chore/DIM-[id]-[short-description]`
 
 **Constraints:**
+
 - Never force push to `main`.
 - Wait for a human to merge pull requests unless explicitly instructed otherwise.
 - Always open a PR — direct pushes to `main` are not permitted.
@@ -66,18 +69,22 @@ Before implementing anything, formulate a plan and surface it to the user for ex
 ### Safety & Data Integrity
 
 **Git:**
+
 - NEVER `git push --force` or `git reset --hard` on `main`.
 - NEVER delete remote branches without human approval.
 
 **Files:**
+
 - Only modify files directly required to complete the objective. Mass refactoring requires human review.
 - NEVER delete files outside `/Users/diregraph/Downloads/dev/data-in-maps/`.
 
 **Secrets:**
+
 - NEVER expose `.env` contents in responses, logs, or documents.
 - NEVER commit `.env` files. Verify `.gitignore` protections before adding new secret scopes.
 
 **Packages:**
+
 - NEVER install global packages without explicit human approval.
 - All installs must be local (`dependencies` or `devDependencies`).
 

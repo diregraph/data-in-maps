@@ -59,7 +59,18 @@
       "Bash(for data:*)",
       "Bash(for arch:*)",
       "Bash(/tmp/final_check.txt:*)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Skill(skills:pr-review)",
+      "Skill(skills:pr-review:*)",
+      "Bash(cp -r src/features/world-map src/modules/legacy/world-map)",
+      "Bash(cp -r src/features/region-explorer src/modules/legacy/region-explorer)",
+      "Bash(find /Users/diregraph/Downloads/dev/data-in-maps -maxdepth 2 -name .husky -o -name lint-staged* -o -name .prettierrc* -o -name .prettierignore)",
+      "Bash(npm --version)",
+      "Bash(ls \"/Users/diregraph/Downloads/dev/data-in-maps/src/app/\\(map\\)/\")",
+      "Bash(ls \"/Users/diregraph/Downloads/dev/data-in-maps/src/app/\\(marketing\\)/\")",
+      "Bash(head -20 \"/Users/diregraph/Downloads/dev/data-in-maps/src/app/\\(map\\)/page.tsx\")",
+      "Bash(head -30 \"/Users/diregraph/Downloads/dev/data-in-maps/src/app/\\(map\\)/MapCanvasLoader.tsx\")",
+      "Bash(npx husky:*)"
     ],
     "deny": [
       "Bash(git push --force:*)",
@@ -67,7 +78,7 @@
       "Bash(git reset --hard:*)"
     ],
     "additionalDirectories": [
-      "/Users/diregraph/Downloads/dev/data-in-maps/src/app/(marketing)/architecture"
+      "/Users/diregraph/Downloads/dev/data-in-maps/src/app/(map)/maps"
     ]
   },
   "hooks": {

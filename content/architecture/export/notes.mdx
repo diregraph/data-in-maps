@@ -30,7 +30,7 @@ export interface ExportOptions {
 
 export interface ExportResult {
   format: ExportFormat
-  data: string   // data URL (PNG/SVG) or plain URL (embed)
+  data: string // data URL (PNG/SVG) or plain URL (embed)
 }
 ```
 
@@ -38,15 +38,18 @@ export interface ExportResult {
 
 ```ts
 export function useExport() {
-  const mapRef   = useMapStore((s) => s.mapRef)
+  const mapRef = useMapStore((s) => s.mapRef)
   const viewport = useMapStore((s) => s.viewport)
-  const layers   = useLayerStore((s) => s.layers)
+  const layers = useLayerStore((s) => s.layers)
 
   async function exportMap(opts: ExportOptions): Promise<ExportResult> {
     switch (opts.format) {
-      case "png":   return exportPng(mapRef)
-      case "svg":   return exportSvg(layers)
-      case "embed": return exportEmbed(viewport, layers)
+      case "png":
+        return exportPng(mapRef)
+      case "svg":
+        return exportSvg(layers)
+      case "embed":
+        return exportEmbed(viewport, layers)
     }
   }
 
@@ -57,6 +60,7 @@ export function useExport() {
 ## Exporters
 
 **png.ts** — reads the WebGL canvas directly:
+
 ```ts
 export async function exportPng(mapRef: MapRef): Promise<ExportResult> {
   const canvas = mapRef.current?.getCanvas()
@@ -68,22 +72,24 @@ export async function exportPng(mapRef: MapRef): Promise<ExportResult> {
 ```
 
 **svg.ts** — vector-only export (no tile basemap):
+
 ```ts
 export function exportSvg(layers: Layer[]): ExportResult {
   const features = layers
     .filter((l) => l.visible)
-    .flatMap((l) => geoJsonToSvgPaths(l))   // lib/geo.ts helper
-  const svg  = buildSvgDocument(features)
+    .flatMap((l) => geoJsonToSvgPaths(l)) // lib/geo.ts helper
+  const svg = buildSvgDocument(features)
   const data = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
   return { format: "svg", data }
 }
 ```
 
 **embed.ts** — base64-encoded config URL:
+
 ```ts
 export function exportEmbed(viewport: Viewport, layers: Layer[]): ExportResult {
   const config = btoa(JSON.stringify({ viewport, layers }))
-  const data   = `${window.location.origin}/maps/embed?c=${config}`
+  const data = `${window.location.origin}/maps/embed?c=${config}`
   return { format: "embed", data }
 }
 ```

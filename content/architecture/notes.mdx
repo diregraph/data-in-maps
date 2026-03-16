@@ -3,9 +3,11 @@
 ## Mental model — the pipeline
 
 Every user interaction flows left to right through one mental model:
+
 ```
 User input → ai → data → layers → map → export
 ```
+
 The `ui` module is a horizontal concern — a design system used by everything. Every other module is vertical: self-contained, with a single job, communicating only through its `index.ts` surface.
 
 ## Folder structure
@@ -62,15 +64,15 @@ src/
 
 ## Tech stack (minimal viable, designed to swap)
 
-| Concern | Choice | Rationale |
-|---------|--------|-----------|
-| Map renderer | MapLibre GL JS | OSS, WebGL, zero Mapbox lock-in |
-| Tiles | PMTiles + OSM fallback | Self-hostable, no API key needed to start |
-| State | Zustand | One slice per module, no boilerplate |
-| Data fetching | TanStack Query | Caching, loading states, retries for free |
-| Validation | Zod | Runtime safety on AI output + user data |
-| AI | Anthropic Claude (via `/api/ai`) | Keys never touch the client |
-| Styling | Tailwind CSS + shadcn | Low cognitive overhead for contributors |
+| Concern       | Choice                           | Rationale                                 |
+| ------------- | -------------------------------- | ----------------------------------------- |
+| Map renderer  | MapLibre GL JS                   | OSS, WebGL, zero Mapbox lock-in           |
+| Tiles         | PMTiles + OSM fallback           | Self-hostable, no API key needed to start |
+| State         | Zustand                          | One slice per module, no boilerplate      |
+| Data fetching | TanStack Query                   | Caching, loading states, retries for free |
+| Validation    | Zod                              | Runtime safety on AI output + user data   |
+| AI            | Anthropic Claude (via `/api/ai`) | Keys never touch the client               |
+| Styling       | Tailwind CSS + shadcn            | Low cognitive overhead for contributors   |
 
 ## Three rules every contributor must feel intuitively
 
@@ -83,4 +85,3 @@ src/
 ## What to build first
 
 Start with `map` + `layers` alone (static GeoJSON upload → rendered map). Add `ai` only once the non-AI path is solid. This keeps the app stable and testable at every step, which is exactly in the spirit of the mission.
-

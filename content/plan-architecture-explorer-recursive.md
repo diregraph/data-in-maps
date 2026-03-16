@@ -11,10 +11,12 @@
 Refactor the architecture explorer from a single hardcoded diagram into a recursively composable system. Each node in the tree can optionally have its own sub-diagram. Navigating into a node shows that node's diagram (if it has one) or the nearest ancestor's diagram with the node highlighted. Depth is unbounded — adding a new diagram at any level requires touching exactly four places and nothing else.
 
 While building the infrastructure, fully implement two node pages:
+
 - **`app-router`** — 15 sub-nodes, SVG at `content/architecture/app-router/app_router_structure.svg`
 - **`tile-provider`** — 6 sub-nodes, SVG at `content/architecture/tile-provider/tile_provider_architecture.svg`
 
 And one leaf-node page (notes only, no diagram):
+
 - **`tile-provider/create-tile-provider`** — factory implementation notes
 
 ---
@@ -122,8 +124,10 @@ function resolveViewer(slug: string[]) {
 ```tsx
 export function ArchitecturePage({ slug }: { slug: string[] }) {
   return (
-    <main className="bg-[#1a1916] min-h-screen">
-      <nav aria-label="Breadcrumb" /* ... existing breadcrumb JSX unchanged ... */ />
+    <main className="min-h-screen bg-[#1a1916]">
+      <nav
+        aria-label="Breadcrumb" /* ... existing breadcrumb JSX unchanged ... */
+      />
       {resolveViewer(slug)}
       <NodeContent slug={slug} />
     </main>
@@ -138,15 +142,18 @@ The breadcrumb `nav` block is unchanged — copy it verbatim from the current fi
 ## File manifest
 
 ### Delete
+
 - `src/modules/ui/architecture/ArchitectureViewer.tsx`
 
 ### Create
+
 - `src/modules/ui/architecture/DiagramViewer.tsx`
 - `src/modules/ui/architecture/app-router/AppRouterDiagram.tsx`
 - `src/modules/ui/architecture/tile-provider/TileProviderDiagram.tsx`
 - `content/architecture/tile-provider/create-tile-provider/notes.mdx`
 
 ### Modify
+
 - `src/modules/ui/architecture/nodes.ts`
 - `src/modules/ui/architecture/ArchitecturePage.tsx`
 - `src/modules/ui/architecture/index.ts`
@@ -154,6 +161,7 @@ The breadcrumb `nav` block is unchanged — copy it verbatim from the current fi
 - `content/architecture/tile-provider/notes.mdx`
 
 ### Do not touch
+
 - `src/modules/ui/architecture/ArchitectureDiagram.tsx`
 - `src/modules/ui/architecture/NodeContent.tsx`
 - `src/modules/ui/architecture/ArchitectureNotes.tsx` (unused, leave as-is)
@@ -215,7 +223,7 @@ export type TileProviderNodeId =
 export interface ArchNodeConfig {
   label: string
   prompt: string
-  viewerKey?: string                     // ← NEW — present only if node has a sub-diagram
+  viewerKey?: string // ← NEW — present only if node has a sub-diagram
   children?: Record<string, ArchNodeConfig>
 }
 ```
@@ -408,33 +416,36 @@ Pattern: identical to `ArchitectureDiagram.tsx`. Study that file before writing 
 **NODE_BOUNDS** (extracted from `content/architecture/app-router/app_router_structure.svg`):
 
 ```typescript
-const NODE_BOUNDS: Record<AppRouterNodeId, { x: number; y: number; w: number; h: number }> = {
-  layout:            { x: 240, y: 20,  w: 200, h: 44 },
-  "map-group":       { x: 30,  y: 104, w: 180, h: 56 },
+const NODE_BOUNDS: Record<
+  AppRouterNodeId,
+  { x: number; y: number; w: number; h: number }
+> = {
+  layout: { x: 240, y: 20, w: 200, h: 44 },
+  "map-group": { x: 30, y: 104, w: 180, h: 56 },
   "marketing-group": { x: 250, y: 104, w: 180, h: 56 },
-  api:               { x: 470, y: 104, w: 180, h: 56 },
-  "map-page":        { x: 18,  y: 200, w: 88,  h: 44 },
-  "maps-id":         { x: 130, y: 200, w: 100, h: 44 },
-  "marketing-page":  { x: 238, y: 200, w: 88,  h: 44 },
-  gallery:           { x: 350, y: 200, w: 100, h: 44 },
-  "ai-route":        { x: 456, y: 200, w: 92,  h: 44 },
-  "export-route":    { x: 572, y: 200, w: 96,  h: 44 },
-  loading:           { x: 28,  y: 296, w: 110, h: 44 },
-  error:             { x: 154, y: 296, w: 110, h: 44 },
-  "not-found":       { x: 280, y: 296, w: 120, h: 44 },
+  api: { x: 470, y: 104, w: 180, h: 56 },
+  "map-page": { x: 18, y: 200, w: 88, h: 44 },
+  "maps-id": { x: 130, y: 200, w: 100, h: 44 },
+  "marketing-page": { x: 238, y: 200, w: 88, h: 44 },
+  gallery: { x: 350, y: 200, w: 100, h: 44 },
+  "ai-route": { x: 456, y: 200, w: 92, h: 44 },
+  "export-route": { x: 572, y: 200, w: 96, h: 44 },
+  loading: { x: 28, y: 296, w: 110, h: 44 },
+  error: { x: 154, y: 296, w: 110, h: 44 },
+  "not-found": { x: 280, y: 296, w: 120, h: 44 },
   "opengraph-image": { x: 416, y: 296, w: 120, h: 44 },
-  sitemap:           { x: 552, y: 296, w: 110, h: 44 },
+  sitemap: { x: 552, y: 296, w: 110, h: 44 },
 }
 ```
 
 **Color palette** for the SVG nodes:
 
-| Group | fill | stroke | text (primary) | text (secondary) |
-|-------|------|--------|----------------|-----------------|
-| `layout` (root) | `rgb(60,52,137)` | `rgb(175,169,236)` | `rgb(206,203,246)` | — |
-| `map-group`, `map-page`, `maps-id` (canvas routes) | `rgb(8,80,65)` | `rgb(93,202,165)` | `rgb(159,225,203)` | `rgb(93,202,165)` |
-| `marketing-group`, `marketing-page`, `gallery` (public) | `rgb(68,68,65)` | `rgb(180,178,169)` | `rgb(211,209,199)` | `rgb(180,178,169)` |
-| `api`, `ai-route`, `export-route` (API routes) | `rgb(113,43,19)` | `rgb(240,153,123)` | `rgb(245,196,179)` | `rgb(240,153,123)` |
+| Group                                                                         | fill             | stroke             | text (primary)     | text (secondary)   |
+| ----------------------------------------------------------------------------- | ---------------- | ------------------ | ------------------ | ------------------ |
+| `layout` (root)                                                               | `rgb(60,52,137)` | `rgb(175,169,236)` | `rgb(206,203,246)` | —                  |
+| `map-group`, `map-page`, `maps-id` (canvas routes)                            | `rgb(8,80,65)`   | `rgb(93,202,165)`  | `rgb(159,225,203)` | `rgb(93,202,165)`  |
+| `marketing-group`, `marketing-page`, `gallery` (public)                       | `rgb(68,68,65)`  | `rgb(180,178,169)` | `rgb(211,209,199)` | `rgb(180,178,169)` |
+| `api`, `ai-route`, `export-route` (API routes)                                | `rgb(113,43,19)` | `rgb(240,153,123)` | `rgb(245,196,179)` | `rgb(240,153,123)` |
 | `loading`, `error`, `not-found`, `opengraph-image`, `sitemap` (special files) | `rgb(12,68,124)` | `rgb(133,183,235)` | `rgb(181,212,244)` | `rgb(133,183,235)` |
 
 **Connector arrows color**: `stroke="rgba(222,220,209,0.3)"` `strokeWidth={1}` for the branch lines.
@@ -456,11 +467,13 @@ Legend (y≈400):  4 color swatches with labels
 ```
 
 Branch paths from `layout` down to row 2 (copy from SVG):
+
 - `layout → map-group`: `M 340 64 L 340 84` then `M 340 84 L 120 84 L 120 104`
 - `layout → marketing-group`: `M 340 84 L 340 104`
 - `layout → api`: `M 340 84 L 560 84 L 560 104`
 
 Branch paths from row 2 down to row 3 (copy from SVG):
+
 - `map-group → map-page`: `M 120 160 L 120 180 L 60 180 L 60 200`
 - `map-group → maps-id`: `M 120 180 L 180 180 L 180 200`
 - `marketing-group → marketing-page`: `M 340 180 L 280 180 L 280 200`
@@ -488,25 +501,28 @@ Same pattern as `AppRouterDiagram.tsx`.
 **NODE_BOUNDS** (from `content/architecture/tile-provider/tile_provider_architecture.svg`):
 
 ```typescript
-const NODE_BOUNDS: Record<TileProviderNodeId, { x: number; y: number; w: number; h: number }> = {
-  "map-canvas":              { x: 220, y: 20,  w: 240, h: 44 },
-  "tile-provider-interface": { x: 170, y: 96,  w: 340, h: 56 },
-  "pmtiles-provider":        { x: 28,  y: 196, w: 184, h: 60 },
-  "osm-provider":            { x: 248, y: 196, w: 184, h: 60 },
-  "mapbox-provider":         { x: 468, y: 196, w: 184, h: 60 },
-  "create-tile-provider":    { x: 200, y: 290, w: 280, h: 56 },
+const NODE_BOUNDS: Record<
+  TileProviderNodeId,
+  { x: number; y: number; w: number; h: number }
+> = {
+  "map-canvas": { x: 220, y: 20, w: 240, h: 44 },
+  "tile-provider-interface": { x: 170, y: 96, w: 340, h: 56 },
+  "pmtiles-provider": { x: 28, y: 196, w: 184, h: 60 },
+  "osm-provider": { x: 248, y: 196, w: 184, h: 60 },
+  "mapbox-provider": { x: 468, y: 196, w: 184, h: 60 },
+  "create-tile-provider": { x: 200, y: 290, w: 280, h: 56 },
 }
 ```
 
 **Color palette**:
 
-| Node | fill | stroke | text (primary) | text (secondary) |
-|------|------|--------|----------------|-----------------|
-| `map-canvas` (consumer) | `rgb(60,52,137)` | `rgb(175,169,236)` | `rgb(206,203,246)` | — |
-| `tile-provider-interface` | `rgb(8,80,65)` | `rgb(93,202,165)` | `rgb(159,225,203)` | `rgb(93,202,165)` |
-| `pmtiles-provider`, `osm-provider` | `rgb(8,80,65)` | `rgb(93,202,165)` | `rgb(159,225,203)` | `rgb(93,202,165)` |
-| `mapbox-provider` | `rgb(99,56,6)` | `rgb(239,159,39)` | `rgb(250,199,117)` | `rgb(239,159,39)` |
-| `create-tile-provider` (factory) | `rgb(68,68,65)` | `rgb(180,178,169)` | `rgb(211,209,199)` | `rgb(180,178,169)` |
+| Node                               | fill             | stroke             | text (primary)     | text (secondary)   |
+| ---------------------------------- | ---------------- | ------------------ | ------------------ | ------------------ |
+| `map-canvas` (consumer)            | `rgb(60,52,137)` | `rgb(175,169,236)` | `rgb(206,203,246)` | —                  |
+| `tile-provider-interface`          | `rgb(8,80,65)`   | `rgb(93,202,165)`  | `rgb(159,225,203)` | `rgb(93,202,165)`  |
+| `pmtiles-provider`, `osm-provider` | `rgb(8,80,65)`   | `rgb(93,202,165)`  | `rgb(159,225,203)` | `rgb(93,202,165)`  |
+| `mapbox-provider`                  | `rgb(99,56,6)`   | `rgb(239,159,39)`  | `rgb(250,199,117)` | `rgb(239,159,39)`  |
+| `create-tile-provider` (factory)   | `rgb(68,68,65)`  | `rgb(180,178,169)` | `rgb(211,209,199)` | `rgb(180,178,169)` |
 
 **Structural layout**:
 
@@ -524,6 +540,7 @@ Row 4 (y=290):  create-tile-provider (centered x=340)
 ```
 
 Connector arrows (from SVG):
+
 - `map-canvas → tile-provider-interface`: straight line `x1=340 y1=64 x2=340 y2=96`
 - `tile-provider-interface → pmtiles-provider`: `M 340 152 L 340 176 L 120 176 L 120 196`
 - `tile-provider-interface → osm-provider`: `M 340 176 L 340 196`
@@ -536,6 +553,7 @@ Connector arrows (from SVG):
 All branch connectors: `stroke="rgba(222,220,209,0.3)"` `strokeWidth={1}`.
 
 **Legend** (at y≈362):
+
 - Green swatch + "default / OSS"
 - Amber swatch + "optional (env-gated)"
 - Gray swatch + "factory — single config point"
@@ -548,10 +566,12 @@ Full replacement. The breadcrumb `<nav>` block is **identical** to the current f
 
 ```tsx
 import Link from "next/link"
-import { DiagramViewer } from "./DiagramViewer"        // ← replaces ArchitectureViewer
+
+import { DiagramViewer } from "./DiagramViewer"
+// ← replaces ArchitectureViewer
 import { NodeContent } from "./NodeContent"
-import { getNodeBySlug, NODES } from "./nodes"
-import type { NodeId, ArchNodeConfig } from "./nodes"
+import { NODES, getNodeBySlug } from "./nodes"
+import type { ArchNodeConfig, NodeId } from "./nodes"
 
 interface ArchitecturePageProps {
   slug: string[]
@@ -592,7 +612,7 @@ export function ArchitecturePage({ slug }: ArchitecturePageProps) {
   const activeNodeId = slug.length > 0 ? (slug[0] as NodeId) : undefined
 
   return (
-    <main className="bg-[#1a1916] min-h-screen">
+    <main className="min-h-screen bg-[#1a1916]">
       <nav
         aria-label="Breadcrumb"
         className="flex items-center gap-1.5 px-8 pt-6 pb-2 text-sm text-[rgb(156,154,146)]"
@@ -616,14 +636,19 @@ export function ArchitecturePage({ slug }: ArchitecturePageProps) {
 
 ```typescript
 export { ArchitectureDiagram } from "./ArchitectureDiagram"
-export { ArchitectureNotes }   from "./ArchitectureNotes"
-export { ArchitecturePage }    from "./ArchitecturePage"
-export { DiagramViewer }       from "./DiagramViewer"          // ← new
-export { NodeContent }         from "./NodeContent"
-export { NodeDetailPanel }     from "./NodeDetailPanel"
+export { ArchitectureNotes } from "./ArchitectureNotes"
+export { ArchitecturePage } from "./ArchitecturePage"
+export { DiagramViewer } from "./DiagramViewer" // ← new
+export { NodeContent } from "./NodeContent"
+export { NodeDetailPanel } from "./NodeDetailPanel"
 export { NODES, getNodeBySlug } from "./nodes"
-export type { NodeId, AppRouterNodeId, TileProviderNodeId, ArchNodeConfig } from "./nodes"  // ← new types
-export type { ArchNode }       from "./types"
+export type {
+  NodeId,
+  AppRouterNodeId,
+  TileProviderNodeId,
+  ArchNodeConfig,
+} from "./nodes" // ← new types
+export type { ArchNode } from "./types"
 // ArchitectureViewer removed — deleted
 ```
 
@@ -728,17 +753,17 @@ modules/map/
 
 ```ts
 // tile-providers/types.ts
-import type { SourceSpecification, StyleSpecification } from 'maplibre-gl'
+import type { SourceSpecification, StyleSpecification } from "maplibre-gl"
 
 export interface TileSourceConfig {
-  style?: StyleSpecification         // full style doc (PMTiles, Mapbox)
+  style?: StyleSpecification // full style doc (PMTiles, Mapbox)
   rasterSource?: SourceSpecification // fallback for OSM raster
   attribution: string
 }
 
 export interface TileProvider {
   id: string
-  isReady(): boolean                 // false if required env var is missing
+  isReady(): boolean // false if required env var is missing
   getConfig(): TileSourceConfig
 }
 ```
@@ -747,28 +772,30 @@ export interface TileProvider {
 
 ```ts
 // tile-providers/pmtiles.ts
-import { Protocol } from 'pmtiles'
-import maplibregl from 'maplibre-gl'
+import maplibregl from "maplibre-gl"
+import { Protocol } from "pmtiles"
 
 export class PMTilesProvider implements TileProvider {
-  id = 'pmtiles'
+  id = "pmtiles"
 
   static register() {
     const protocol = new Protocol()
-    maplibregl.addProtocol('pmtiles', protocol.tile.bind(protocol))
+    maplibregl.addProtocol("pmtiles", protocol.tile.bind(protocol))
   }
 
-  isReady() { return true }
+  isReady() {
+    return true
+  }
 
   getConfig(): TileSourceConfig {
-    const url = process.env.NEXT_PUBLIC_PMTILES_URL ?? '/tiles/world.pmtiles'
+    const url = process.env.NEXT_PUBLIC_PMTILES_URL ?? "/tiles/world.pmtiles"
     return {
       style: {
         version: 8,
-        sources: { openmaptiles: { type: 'vector', url: `pmtiles://${url}` } },
+        sources: { openmaptiles: { type: "vector", url: `pmtiles://${url}` } },
         layers: [],
       },
-      attribution: '© OpenMapTiles © OpenStreetMap contributors',
+      attribution: "© OpenMapTiles © OpenStreetMap contributors",
     }
   }
 }
@@ -777,18 +804,20 @@ export class PMTilesProvider implements TileProvider {
 ```ts
 // tile-providers/osm.ts
 export class OSMProvider implements TileProvider {
-  id = 'osm'
-  isReady() { return true }
+  id = "osm"
+  isReady() {
+    return true
+  }
 
   getConfig(): TileSourceConfig {
     return {
       rasterSource: {
-        type: 'raster',
-        tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+        type: "raster",
+        tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
         tileSize: 256,
         maxzoom: 19,
       },
-      attribution: '© OpenStreetMap contributors',
+      attribution: "© OpenStreetMap contributors",
     }
   }
 }
@@ -797,13 +826,15 @@ export class OSMProvider implements TileProvider {
 ```ts
 // tile-providers/mapbox.ts
 export class MapboxProvider implements TileProvider {
-  id = 'mapbox'
+  id = "mapbox"
   private token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
 
-  isReady() { return !!this.token }
+  isReady() {
+    return !!this.token
+  }
 
   getConfig(): TileSourceConfig {
-    if (!this.token) throw new Error('NEXT_PUBLIC_MAPBOX_TOKEN not set')
+    if (!this.token) throw new Error("NEXT_PUBLIC_MAPBOX_TOKEN not set")
     return {
       style: {
         version: 8,
@@ -813,7 +844,7 @@ export class MapboxProvider implements TileProvider {
         sprite: `mapbox://sprites/mapbox/streets-v12?access_token=${this.token}`,
         glyphs: `mapbox://fonts/mapbox/{fontstack}/{range}?access_token=${this.token}`,
       },
-      attribution: '© Mapbox © OpenStreetMap contributors',
+      attribution: "© Mapbox © OpenStreetMap contributors",
     }
   }
 }
@@ -845,18 +876,18 @@ New file — create the directory:
 
 ```ts
 // modules/map/tile-providers/factory.ts
-import { PMTilesProvider } from './pmtiles'
-import { OSMProvider }     from './osm'
-import { MapboxProvider }  from './mapbox'
-import type { TileProvider } from './types'
+import { MapboxProvider } from "./mapbox"
+import { OSMProvider } from "./osm"
+import { PMTilesProvider } from "./pmtiles"
+import type { TileProvider } from "./types"
 
 const PROVIDERS: Record<string, TileProvider> = {
   pmtiles: new PMTilesProvider(),
-  osm:     new OSMProvider(),
-  mapbox:  new MapboxProvider(),
+  osm: new OSMProvider(),
+  mapbox: new MapboxProvider(),
 }
 
-const DEFAULT_PROVIDER = 'pmtiles'
+const DEFAULT_PROVIDER = "pmtiles"
 
 export function createTileProvider(): TileProvider {
   const requested = process.env.NEXT_PUBLIC_TILE_PROVIDER ?? DEFAULT_PROVIDER
@@ -865,8 +896,8 @@ export function createTileProvider(): TileProvider {
   if (!provider) {
     console.warn(
       `[tiles] Unknown provider "${requested}". ` +
-      `Valid options: ${Object.keys(PROVIDERS).join(', ')}. ` +
-      `Falling back to ${DEFAULT_PROVIDER}.`
+        `Valid options: ${Object.keys(PROVIDERS).join(", ")}. ` +
+        `Falling back to ${DEFAULT_PROVIDER}.`,
     )
     return PROVIDERS[DEFAULT_PROVIDER]
   }
@@ -874,7 +905,7 @@ export function createTileProvider(): TileProvider {
   if (!provider.isReady()) {
     console.warn(
       `[tiles] Provider "${requested}" is not ready ` +
-      `(missing env vars). Falling back to OSM.`
+        `(missing env vars). Falling back to OSM.`,
     )
     return PROVIDERS.osm
   }

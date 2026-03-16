@@ -26,21 +26,21 @@ export type EncodingType = "choropleth" | "bubble" | "categorical"
 export interface ChoroplethEncoding {
   type: "choropleth"
   field: string
-  colorScale: string[]       // e.g. ["#f7fbff", "#084594"]
+  colorScale: string[] // e.g. ["#f7fbff", "#084594"]
   domain?: [number, number]
 }
 
 export interface BubbleEncoding {
   type: "bubble"
   field: string
-  radiusRange: [number, number]  // [minPx, maxPx]
+  radiusRange: [number, number] // [minPx, maxPx]
   domain?: [number, number]
 }
 
 export interface CategoricalEncoding {
   type: "categorical"
   field: string
-  colorMap: Record<string, string>  // category → hex color
+  colorMap: Record<string, string> // category → hex color
 }
 
 export type LayerEncoding =
@@ -51,7 +51,7 @@ export type LayerEncoding =
 export interface Layer {
   id: string
   label: string
-  sourceId: string        // references a data source in the data module
+  sourceId: string // references a data source in the data module
   visible: boolean
   encoding: LayerEncoding
 }
@@ -81,17 +81,17 @@ Each encoding module exports a single pure function that converts a `Layer` into
 ```ts
 // choropleth.ts
 export function buildChoroplethPaint(
-  enc: ChoroplethEncoding
+  enc: ChoroplethEncoding,
 ): FillLayerSpecification["paint"]
 
 // bubble.ts
 export function buildBubblePaint(
-  enc: BubbleEncoding
+  enc: BubbleEncoding,
 ): CircleLayerSpecification["paint"]
 
 // categorical.ts
 export function buildCategoricalPaint(
-  enc: CategoricalEncoding
+  enc: CategoricalEncoding,
 ): FillLayerSpecification["paint"]
 ```
 

@@ -16,17 +16,17 @@ modules/map/
 
 ```ts
 // tile-providers/types.ts
-import type { SourceSpecification, StyleSpecification } from 'maplibre-gl'
+import type { SourceSpecification, StyleSpecification } from "maplibre-gl"
 
 export interface TileSourceConfig {
-  style?: StyleSpecification         // full style doc (PMTiles, Mapbox)
+  style?: StyleSpecification // full style doc (PMTiles, Mapbox)
   rasterSource?: SourceSpecification // fallback for OSM raster
   attribution: string
 }
 
 export interface TileProvider {
   id: string
-  isReady(): boolean                 // false if required env var is missing
+  isReady(): boolean // false if required env var is missing
   getConfig(): TileSourceConfig
 }
 ```
@@ -35,28 +35,30 @@ export interface TileProvider {
 
 ```ts
 // tile-providers/pmtiles.ts
-import { Protocol } from 'pmtiles'
-import maplibregl from 'maplibre-gl'
+import maplibregl from "maplibre-gl"
+import { Protocol } from "pmtiles"
 
 export class PMTilesProvider implements TileProvider {
-  id = 'pmtiles'
+  id = "pmtiles"
 
   static register() {
     const protocol = new Protocol()
-    maplibregl.addProtocol('pmtiles', protocol.tile.bind(protocol))
+    maplibregl.addProtocol("pmtiles", protocol.tile.bind(protocol))
   }
 
-  isReady() { return true }
+  isReady() {
+    return true
+  }
 
   getConfig(): TileSourceConfig {
-    const url = process.env.NEXT_PUBLIC_PMTILES_URL ?? '/tiles/world.pmtiles'
+    const url = process.env.NEXT_PUBLIC_PMTILES_URL ?? "/tiles/world.pmtiles"
     return {
       style: {
         version: 8,
-        sources: { openmaptiles: { type: 'vector', url: `pmtiles://${url}` } },
+        sources: { openmaptiles: { type: "vector", url: `pmtiles://${url}` } },
         layers: [],
       },
-      attribution: '© OpenMapTiles © OpenStreetMap contributors',
+      attribution: "© OpenMapTiles © OpenStreetMap contributors",
     }
   }
 }
@@ -65,18 +67,20 @@ export class PMTilesProvider implements TileProvider {
 ```ts
 // tile-providers/osm.ts
 export class OSMProvider implements TileProvider {
-  id = 'osm'
-  isReady() { return true }
+  id = "osm"
+  isReady() {
+    return true
+  }
 
   getConfig(): TileSourceConfig {
     return {
       rasterSource: {
-        type: 'raster',
-        tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+        type: "raster",
+        tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
         tileSize: 256,
         maxzoom: 19,
       },
-      attribution: '© OpenStreetMap contributors',
+      attribution: "© OpenStreetMap contributors",
     }
   }
 }
@@ -85,13 +89,15 @@ export class OSMProvider implements TileProvider {
 ```ts
 // tile-providers/mapbox.ts
 export class MapboxProvider implements TileProvider {
-  id = 'mapbox'
+  id = "mapbox"
   private token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
 
-  isReady() { return !!this.token }
+  isReady() {
+    return !!this.token
+  }
 
   getConfig(): TileSourceConfig {
-    if (!this.token) throw new Error('NEXT_PUBLIC_MAPBOX_TOKEN not set')
+    if (!this.token) throw new Error("NEXT_PUBLIC_MAPBOX_TOKEN not set")
     return {
       style: {
         version: 8,
@@ -101,7 +107,7 @@ export class MapboxProvider implements TileProvider {
         sprite: `mapbox://sprites/mapbox/streets-v12?access_token=${this.token}`,
         glyphs: `mapbox://fonts/mapbox/{fontstack}/{range}?access_token=${this.token}`,
       },
-      attribution: '© Mapbox © OpenStreetMap contributors',
+      attribution: "© Mapbox © OpenStreetMap contributors",
     }
   }
 }
