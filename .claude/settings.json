@@ -51,7 +51,15 @@
       "WebFetch(domain:claude.ai)",
       "Bash(ls /Users/diregraph/Downloads/dev/data-in-maps/next.config*)",
       "Bash(cat /Users/diregraph/Downloads/dev/data-in-maps/next.config*)",
-      "Bash(node -e \"const p = require\\(''/Users/diregraph/Downloads/dev/data-in-maps/package.json''\\); console.log\\(''next:'', p.dependencies.next\\)\")"
+      "Bash(node -e \"const p = require\\(''/Users/diregraph/Downloads/dev/data-in-maps/package.json''\\); console.log\\(''next:'', p.dependencies.next\\)\")",
+      "Bash(grep -E \"^sharp$|^to-ico$\")",
+      "Bash(npm uninstall:*)",
+      "Bash(for comp:*)",
+      "Bash(do echo:*)",
+      "Bash(for data:*)",
+      "Bash(for arch:*)",
+      "Bash(/tmp/final_check.txt:*)",
+      "Read(//tmp/**)"
     ],
     "deny": [
       "Bash(git push --force:*)",
