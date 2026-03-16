@@ -35,6 +35,23 @@ export type TileProviderNodeId =
   | 'mapbox-provider'
   | 'create-tile-provider'
 
+export type LayersNodeId =
+  | 'types'
+  | 'store'
+  | 'choropleth'
+  | 'bubble'
+  | 'categorical'
+  | 'layer-list'
+  | 'layer-editor'
+
+export type MapNodeId =
+  | 'types'
+  | 'map-canvas'
+  | 'store'
+  | 'use-map-instance'
+  | 'use-fly-to'
+  | 'use-layer-sync'
+
 export interface ArchNodeConfig {
   label: string
   prompt: string
@@ -125,11 +142,69 @@ export const NODES: Record<NodeId, ArchNodeConfig> = {
     label: 'layers',
     prompt:
       'Design the layers module for the map platform. How should layer state be managed with Zustand, and what visual encoding types should be supported initially?',
+    viewerKey: 'layers',
+    children: {
+      types: {
+        label: 'types.ts',
+        prompt: 'Show me the full TypeScript contracts for the layers module: Layer, EncodingType, and the LayerEncoding union type.',
+      },
+      store: {
+        label: 'store.ts',
+        prompt: 'Show me the Zustand store for the layers module. How is the ordered layer stack managed, and what CRUD operations does it expose?',
+      },
+      choropleth: {
+        label: 'choropleth',
+        prompt: 'Show me the choropleth encoding implementation. How does buildChoroplethPaint() translate a ChoroplethEncoding into a MapLibre fill-color expression?',
+      },
+      bubble: {
+        label: 'bubble',
+        prompt: 'Show me the bubble encoding implementation. How does buildBubblePaint() scale circle-radius by a numeric data field?',
+      },
+      categorical: {
+        label: 'categorical',
+        prompt: 'Show me the categorical encoding implementation. How does buildCategoricalPaint() map discrete string values to fill colors?',
+      },
+      'layer-list': {
+        label: 'LayerList',
+        prompt: 'Show me the LayerList component. How does it render the ordered layer stack and handle drag-to-reorder?',
+      },
+      'layer-editor': {
+        label: 'LayerEditor',
+        prompt: 'Show me the LayerEditor component. How does it render encoding configuration controls for the active layer?',
+      },
+    },
   },
   map: {
     label: 'map',
     prompt:
       'Design the map module for the map platform. How should MapLibre GL JS be wrapped, what belongs in store.ts, and how should viewport state be managed?',
+    viewerKey: 'map',
+    children: {
+      types: {
+        label: 'types.ts',
+        prompt: 'Show me the full TypeScript contracts for the map module: Viewport, MapState, and MapRef.',
+      },
+      'map-canvas': {
+        label: 'MapCanvas',
+        prompt: 'Show me the MapCanvas component. How does it wrap react-map-gl, sync with the Zustand store, and guard against SSR?',
+      },
+      store: {
+        label: 'store.ts',
+        prompt: 'Show me the Zustand store for the map module. How is viewport state managed, and how does flyTo work without writing animation state?',
+      },
+      'use-map-instance': {
+        label: 'useMapInstance',
+        prompt: 'Show me the useMapInstance hook. How does it expose the raw MapLibre GL JS instance to other hooks?',
+      },
+      'use-fly-to': {
+        label: 'useFlyTo',
+        prompt: 'Show me the useFlyTo hook. How does it wrap the store flyTo action for consumer use?',
+      },
+      'use-layer-sync': {
+        label: 'useLayerSync',
+        prompt: 'Show me the useLayerSync hook. How does it subscribe to the layers store and apply changes to the MapLibre instance with minimal diff calls?',
+      },
+    },
   },
   ui: {
     label: 'ui',

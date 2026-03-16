@@ -1,32 +1,120 @@
-# Design the map module for the map platform. How should MapLibre GL JS be wrapped, what belongs in store.ts, and how should viewport state be managed?
+# map
 
-## Overview
-
-_Placeholder — describe the map module: a thin React wrapper around MapLibre GL JS via react-map-gl, with a Zustand store for viewport and map instance state._
+The `map` module wraps MapLibre GL JS via `react-map-gl`, owns viewport state, and provides hooks that bridge the layers module, programmatic camera control, and raw instance access. It is the single source of truth for everything the renderer knows.
 
 ## Folder structure
 
 ```
 src/modules/map/
-├── index.ts             # barrel: exports MapCanvas, useMapStore
-├── MapCanvas.tsx        # "use client" — react-map-gl Map wrapper
-├── store.ts             # Zustand: viewport, mapRef, flyTo action
-├── hooks/
-│   └── useMapInstance.ts
-└── types.ts             # Viewport, MapRef
+├── index.ts                  # barrel: MapCanvas, useLayerSync, useFlyTo, useMapStore
+├── MapCanvas.tsx             # "use client" — react-map-gl Map wrapper
+├── store.ts                  # Zustand: viewport, mapRef, flyTo action
+├── types.ts                  # Viewport, MapState, MapRef
+└── hooks/
+    ├── useMapInstance.ts     # access the raw MapLibre GL JS instance
+    ├── useLayerSync.ts       # sync layers store → MapLibre sources/layers
+    └── useFlyTo.ts           # programmatic camera animation
 ```
 
-## Key decisions
-
-- _Placeholder — e.g. controlled vs. uncontrolled viewport, SSR guard strategy, how layers module subscribes to map readiness._
-
-## Interfaces
+## Key interfaces
 
 ```ts
-// Placeholder
 export interface Viewport {
   longitude: number
   latitude: number
   zoom: number
+  bearing?: number
+  pitch?: number
+}
+
+export interface MapState {
+  viewport: Viewport
+  isReady: boolean     // true once MapLibre fires the 'load' event
+}
+
+// Internal ref — not exported through index.ts
+export type MapRef = React.RefObject<MapLibreMap | null>
+```
+
+## Zustand store
+
+```ts
+interface MapStore {
+  viewport: Viewport
+  isReady: boolean
+  mapRef: MapRef
+
+  setViewport: (v: Viewport) => void
+  setReady: (ready: boolean) => void
+  flyTo: (target: Partial<Viewport>, options?: FlyToOptions) => void
 }
 ```
+
+`flyTo` calls `mapRef.current?.flyTo(...)` directly — no state is written for the in-flight animation. The viewport is updated only on the `moveend` event, keeping Zustand and MapLibre in sync.
+
+## MapCanvas
+
+```tsx
+"use client"
+
+export function MapCanvas() {
+  const { viewport, setViewport, setReady, mapRef } = useMapStore()
+
+  return (
+    <Map
+      ref={mapRef}
+      {...viewport}
+      mapStyle={createTileProvider().getStyleURL()}
+      onMove={(e) => setViewport(e.viewState)}
+      onLoad={() => setReady(true)}
+      style={{ width: "100%", height: "100%" }}
+    />
+  )
+}
+```
+
+`MapCanvas` is **always** wrapped in a `dynamic(() => import(...), { ssr: false })` call at its usage site. Never import it directly into a Server Component.
+
+## useLayerSync
+
+```ts
+export function useLayerSync() {
+  const layers = useLayerStore((s) => s.layers)
+  const { mapRef, isReady } = useMapStore()
+
+  useEffect(() => {
+    const map = mapRef.current
+    if (!map || !isReady) return
+
+    // remove stale sources/layers, add new ones
+    syncLayersToMap(map, layers)
+  }, [layers, isReady, mapRef])
+}
+```
+
+`syncLayersToMap` is a pure function in `lib/map-sync.ts` — it diffs the current MapLibre state against the desired `Layer[]` and issues the minimal set of `addSource` / `addLayer` / `removeLayer` calls. This keeps `useLayerSync` testable via a mock map object.
+
+## useFlyTo
+
+```ts
+export function useFlyTo() {
+  const flyTo = useMapStore((s) => s.flyTo)
+  return flyTo
+}
+```
+
+A thin selector hook — keeps consumers decoupled from the store shape.
+
+## Key decisions
+
+**Why Zustand for viewport instead of react-map-gl's uncontrolled mode?**
+Controlled viewport lets other parts of the app (AI module, URL params, share links) drive the camera without going through React events. The tradeoff is a re-render on every `onMove` event; this is acceptable because the map canvas itself is outside React's reconciler.
+
+**Why not store `mapRef` in Zustand state?**
+A `Ref` object is mutable and never triggers re-renders. Storing it in Zustand as a stable non-reactive value (set once on mount, never replaced) gives any hook access to the instance without subscribing to map state.
+
+**Why does `useLayerSync` live in `map/`, not `layers/`?**
+It needs both the layers store and the MapLibre instance. Placing it in `layers` would create a cross-module store import (`layers` importing from `map`). Placing it in `map` keeps the dependency arrow one-directional: `map` knows about `layers`, but `layers` is unaware of `map`.
+
+**Why is `syncLayersToMap` a pure function, not inlined in `useLayerSync`?**
+Separating the diff logic from the hook makes it unit-testable without `jsdom` or a real MapLibre instance. Pass in a mock map object and any `Layer[]` array — verify the right calls are made.

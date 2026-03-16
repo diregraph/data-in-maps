@@ -1,36 +1,112 @@
-# Design the layers module for the map platform. How should layer state be managed with Zustand, and what visual encoding types should be supported initially?
+# layers
 
-## Overview
-
-_Placeholder — describe the layers module: it owns the ordered stack of map layers and their style configuration, bridging parsed data and the map renderer._
+The `layers` module owns the ordered stack of map layers and their visual encoding configuration. It bridges parsed data (from the `data` module) and the map renderer (`map` module), translating user intent into MapLibre GL JS layer specs.
 
 ## Folder structure
 
 ```
 src/modules/layers/
-├── index.ts             # barrel: exports store, types, encoding helpers
-├── store.ts             # Zustand store: layerStack, add/remove/reorder
+├── index.ts               # barrel: Layer, EncodingType, useLayerStore
+├── store.ts               # Zustand slice: ordered stack, CRUD, active layer
+├── types.ts               # Layer, LayerEncoding union, EncodingType
 ├── encodings/
-│   ├── choropleth.ts    # fill-color ramp by data value
-│   ├── bubble.ts        # circle-radius by data value
-│   └── categorical.ts   # fill-color by category
-└── types.ts             # Layer, LayerEncoding, EncodingType
+│   ├── choropleth.ts      # fill-color ramp by numeric value
+│   ├── bubble.ts          # circle-radius by numeric value
+│   └── categorical.ts     # fill-color by discrete string category
+└── components/
+    ├── LayerList.tsx       # ordered stack editor with drag-to-reorder
+    └── LayerEditor.tsx     # encoding configuration panel for active layer
 ```
 
-## Key decisions
-
-- _Placeholder — e.g. immutable layer records vs. mutable, encoding union type strategy, how layers map to MapLibre layer spec._
-
-## Interfaces
+## Key interfaces
 
 ```ts
-// Placeholder
 export type EncodingType = "choropleth" | "bubble" | "categorical"
+
+export interface ChoroplethEncoding {
+  type: "choropleth"
+  field: string
+  colorScale: string[]       // e.g. ["#f7fbff", "#084594"]
+  domain?: [number, number]
+}
+
+export interface BubbleEncoding {
+  type: "bubble"
+  field: string
+  radiusRange: [number, number]  // [minPx, maxPx]
+  domain?: [number, number]
+}
+
+export interface CategoricalEncoding {
+  type: "categorical"
+  field: string
+  colorMap: Record<string, string>  // category → hex color
+}
+
+export type LayerEncoding =
+  | ChoroplethEncoding
+  | BubbleEncoding
+  | CategoricalEncoding
 
 export interface Layer {
   id: string
-  sourceId: string
-  encoding: EncodingType
-  // ...
+  label: string
+  sourceId: string        // references a data source in the data module
+  visible: boolean
+  encoding: LayerEncoding
 }
 ```
+
+## Zustand store
+
+```ts
+interface LayerStore {
+  layers: Layer[]
+  activeLayerId: string | null
+
+  addLayer: (layer: Layer) => void
+  removeLayer: (id: string) => void
+  updateLayer: (id: string, patch: Partial<Layer>) => void
+  reorderLayers: (from: number, to: number) => void
+  setActiveLayer: (id: string | null) => void
+}
+```
+
+Layers are ordered: index 0 renders first (bottom of the stack), last index renders on top. The `map` module subscribes to `layers` and re-derives MapLibre source + layer specs on every store change.
+
+## Encoding helpers
+
+Each encoding module exports a single pure function that converts a `Layer` into MapLibre paint/layout properties:
+
+```ts
+// choropleth.ts
+export function buildChoroplethPaint(
+  enc: ChoroplethEncoding
+): FillLayerSpecification["paint"]
+
+// bubble.ts
+export function buildBubblePaint(
+  enc: BubbleEncoding
+): CircleLayerSpecification["paint"]
+
+// categorical.ts
+export function buildCategoricalPaint(
+  enc: CategoricalEncoding
+): FillLayerSpecification["paint"]
+```
+
+No side effects, no store imports — unit-testable in isolation without a WebGL context.
+
+## Key decisions
+
+**Why a union type for `LayerEncoding` instead of a class hierarchy?**
+Exhaustive `switch` on `encoding.type` gives TypeScript narrowing for free. Adding a new encoding type is a single-file change. No runtime polymorphism needed.
+
+**Why immutable layer records?**
+`updateLayer` replaces the full layer object via spread (`{ ...existing, ...patch }`), keeping React's shallow equality fast and eliminating subtle mutation bugs in Zustand.
+
+**Why doesn't `layers` know about MapLibre?**
+The `map` module owns the renderer. `layers` emits a plain `Layer[]` array; `map` translates it to MapLibre's `addSource`/`addLayer` calls. This keeps `layers` testable without a WebGL context.
+
+**Why does `LayerEditor` read directly from the store instead of receiving props?**
+The active layer can change via drag-to-reorder in `LayerList`, the AI module, or URL state. Subscribing directly avoids prop-drilling a mutable reference through multiple component boundaries.
