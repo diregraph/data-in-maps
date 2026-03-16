@@ -9,6 +9,10 @@ A node path is a slash-separated route matching the architecture URL, e.g. `ai`,
 
 ---
 
+## Step 0 — Check the architecture of the platform
+
+Read `content/architecture/notes.mdx` and `src/modules/ui/architecture/nodes.ts` to understand the existing structure, mental model, and visual language of the architecture documentation. See how the node being added fits into the overall system and identify any relevant patterns or conventions to follow.
+
 ## Step 1 — Resolve the node
 
 Read `src/modules/ui/architecture/nodes.ts`. Locate the node at `$ARGUMENTS` by walking the `NODES` tree along the slash-separated segments.
