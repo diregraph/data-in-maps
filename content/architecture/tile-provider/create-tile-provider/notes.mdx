@@ -1,0 +1,72 @@
+# createTileProvider()
+
+```ts
+// modules/map/tile-providers/factory.ts
+import { PMTilesProvider } from './pmtiles'
+import { OSMProvider }     from './osm'
+import { MapboxProvider }  from './mapbox'
+import type { TileProvider } from './types'
+
+const PROVIDERS: Record<string, TileProvider> = {
+  pmtiles: new PMTilesProvider(),
+  osm:     new OSMProvider(),
+  mapbox:  new MapboxProvider(),
+}
+
+const DEFAULT_PROVIDER = 'pmtiles'
+
+export function createTileProvider(): TileProvider {
+  const requested = process.env.NEXT_PUBLIC_TILE_PROVIDER ?? DEFAULT_PROVIDER
+  const provider = PROVIDERS[requested]
+
+  if (!provider) {
+    console.warn(
+      `[tiles] Unknown provider "${requested}". ` +
+      `Valid options: ${Object.keys(PROVIDERS).join(', ')}. ` +
+      `Falling back to ${DEFAULT_PROVIDER}.`
+    )
+    return PROVIDERS[DEFAULT_PROVIDER]
+  }
+
+  if (!provider.isReady()) {
+    console.warn(
+      `[tiles] Provider "${requested}" is not ready ` +
+      `(missing env vars). Falling back to OSM.`
+    )
+    return PROVIDERS.osm
+  }
+
+  return provider
+}
+```
+
+## Fallback chain
+
+```
+NEXT_PUBLIC_TILE_PROVIDER=mapbox
+  → MapboxProvider.isReady()?
+      token set?    → use Mapbox
+      token missing → warn + fall back to OSM
+
+NEXT_PUBLIC_TILE_PROVIDER not set  → PMTiles (default)
+NEXT_PUBLIC_TILE_PROVIDER=unknown  → warn + PMTiles (default)
+```
+
+The `isReady()` check is where env-var reading actually lives — the factory
+just delegates:
+
+```ts
+// mapbox.ts
+isReady() { return !!process.env.NEXT_PUBLIC_MAPBOX_TOKEN }
+
+// pmtiles.ts + osm.ts
+isReady() { return true }
+```
+
+## Important: build-time env inlining
+
+`process.env.NEXT_PUBLIC_*` is inlined at build time by Next.js.
+`createTileProvider()` resolves to a concrete provider at startup —
+there is no runtime env reading after the bundle is built. If you need
+runtime switching (e.g. per-tenant tile sources), the factory must
+accept an explicit argument instead of reading env directly.

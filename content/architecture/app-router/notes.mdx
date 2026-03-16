@@ -1,29 +1,67 @@
-# How should the Next.js App Router be set up for an open-source map platform? What pages, route groups, and API routes are needed?
+# Next.js App Router
 
-## Overview
-
-_Placeholder — describe the overall App Router structure, route groups, and the rationale for each._
-
-## Folder structure
+## Route tree
 
 ```
-src/app/
-├── (marketing)/         # public-facing static pages
-│   ├── layout.tsx
-│   └── architecture/
-├── (map)/               # interactive map shell
-│   ├── layout.tsx
-│   └── page.tsx
+app/
+├── layout.tsx                    # Root — providers: Zustand, TanStack Query, theme
+├── not-found.tsx
+├── sitemap.ts                    # Generates /maps/[id] entries for public maps
+├── opengraph-image.tsx           # Dynamic OG image for shared map links
+│
+├── (map)/                        # Route group — no URL segment
+│   ├── layout.tsx                # Map shell: sidebar + canvas, no nav
+│   ├── page.tsx                  # / → editor (the main product)
+│   └── maps/
+│       └── [id]/
+│           ├── page.tsx          # /maps/abc → read-only shared view (SSR)
+│           └── loading.tsx
+│
+├── (marketing)/                  # Route group — no URL segment
+│   ├── layout.tsx                # Nav header + footer
+│   ├── page.tsx                  # / landing  ← only shown when no session
+│   ├── gallery/
+│   │   └── page.tsx              # /gallery — curated example maps
+│   ├── loading.tsx
+│   └── error.tsx
+│
 └── api/
-    └── ...              # API routes
+    ├── ai/
+    │   └── route.ts              # POST — natural language → MapConfig
+    └── export/
+        └── route.ts              # POST — map state → PNG / SVG / embed URL
 ```
 
 ## Key decisions
 
-- _Placeholder — e.g. why route groups are used, streaming vs. static rendering, middleware scope._
+**Two route groups, one URL namespace.** `(map)` and `(marketing)` share the same URL
+space — `/` serves either the editor or the landing page depending on session state.
+Route groups let each have its own `layout.tsx` with no shared chrome bleeding between
+them.
 
-## Interfaces
+**`/maps/[id]` is server-rendered.** The shared map view fetches the stored map config
+server-side and renders a static snapshot. No client-side Zustand needed — keeps it fast
+and crawlable. `generateMetadata` pulls the map title for link previews.
+
+**API routes are the only place Claude and export logic run.** No Anthropic SDK usage in
+client components, ever. Both routes are thin: validate input with Zod → call the service
+→ stream or return JSON.
+
+## API contracts
 
 ```ts
-// Placeholder — shared types consumed by layout and page components
+// POST /api/ai
+// Body:    { prompt: string; context?: PartialMapConfig }
+// Returns: ReadableStream<MapConfig>  (streamed JSON delta)
+
+// POST /api/export
+// Body:    { mapState: MapConfig; format: 'png' | 'svg' | 'embed' }
+// Returns: Blob (png/svg) or { url: string } (embed)
 ```
+
+## What to defer
+
+Skip `/auth` entirely at launch. Use `localStorage` for map persistence. Add auth
+(Clerk or NextAuth) only once saved maps need to survive across devices. The route group
+structure makes it trivial to add an `(auth)/login` group later without touching
+anything else.

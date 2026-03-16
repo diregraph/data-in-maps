@@ -1,16 +1,44 @@
 import Link from "next/link"
-import { ArchitectureViewer } from "./ArchitectureViewer"
+import { DiagramViewer } from "./DiagramViewer"
 import { NodeContent } from "./NodeContent"
-import { getNodeBySlug } from "./nodes"
-import type { NodeId } from "./nodes"
+import { getNodeBySlug, NODES } from "./nodes"
+import type { ArchNodeConfig } from "./nodes"
 
 interface ArchitecturePageProps {
   slug: string[]
 }
 
-export function ArchitecturePage({ slug }: ArchitecturePageProps) {
-  const activeNodeId = slug.length > 0 ? (slug[0] as NodeId) : undefined
+function resolveViewer(slug: string[]) {
+  let viewerKey = "root"
+  let basePath = "/architecture"
+  let activeNodeId: string | undefined = slug[0]
 
+  let children: Record<string, ArchNodeConfig> = NODES
+
+  for (let i = 0; i < slug.length; i++) {
+    const segment = slug[i]
+    const node = children[segment]
+    if (!node) break
+
+    if (node.viewerKey) {
+      viewerKey = node.viewerKey
+      basePath = "/architecture/" + slug.slice(0, i + 1).join("/")
+      activeNodeId = slug[i + 1]
+    }
+
+    children = node.children ?? {}
+  }
+
+  return (
+    <DiagramViewer
+      viewerKey={viewerKey}
+      basePath={basePath}
+      activeNodeId={activeNodeId}
+    />
+  )
+}
+
+export function ArchitecturePage({ slug }: ArchitecturePageProps) {
   return (
     <main className="bg-[#1a1916] min-h-screen">
       <nav
@@ -53,7 +81,7 @@ export function ArchitecturePage({ slug }: ArchitecturePageProps) {
         )}
       </nav>
 
-      <ArchitectureViewer activeNodeId={activeNodeId} />
+      {resolveViewer(slug)}
 
       <NodeContent slug={slug} />
     </main>

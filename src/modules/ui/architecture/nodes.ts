@@ -10,9 +10,35 @@ export type NodeId =
   | 'tile-provider'
   | 'browser-storage'
 
+export type AppRouterNodeId =
+  | 'layout'
+  | 'map-group'
+  | 'marketing-group'
+  | 'api'
+  | 'map-page'
+  | 'maps-id'
+  | 'marketing-page'
+  | 'gallery'
+  | 'ai-route'
+  | 'export-route'
+  | 'loading'
+  | 'error'
+  | 'not-found'
+  | 'opengraph-image'
+  | 'sitemap'
+
+export type TileProviderNodeId =
+  | 'map-canvas'
+  | 'tile-provider-interface'
+  | 'pmtiles-provider'
+  | 'osm-provider'
+  | 'mapbox-provider'
+  | 'create-tile-provider'
+
 export interface ArchNodeConfig {
   label: string
   prompt: string
+  viewerKey?: string
   children?: Record<string, ArchNodeConfig>
 }
 
@@ -21,6 +47,69 @@ export const NODES: Record<NodeId, ArchNodeConfig> = {
     label: 'Next.js app router',
     prompt:
       'How should the Next.js App Router be set up for an open-source map platform? What pages, route groups, and API routes are needed?',
+    viewerKey: 'app-router',
+    children: {
+      layout: {
+        label: 'app/layout.tsx',
+        prompt: 'What goes in the root layout.tsx for the map platform? What providers wrap the app?',
+      },
+      'map-group': {
+        label: '(map)',
+        prompt: 'What is the (map) route group responsible for in the map platform? What shared layout does it provide?',
+      },
+      'marketing-group': {
+        label: '(marketing)',
+        prompt: 'What pages live in the (marketing) route group for the map platform? What is its layout?',
+      },
+      api: {
+        label: 'api/',
+        prompt: 'What is the api/ directory responsible for in the map platform app router?',
+      },
+      'map-page': {
+        label: '(map)/page.tsx',
+        prompt: 'What does the main editor page look like at (map)/page.tsx? What components does it render?',
+      },
+      'maps-id': {
+        label: 'maps/[id]',
+        prompt: 'How should shared map routes like /maps/[id] work in the map platform? What does the dynamic route fetch?',
+      },
+      'marketing-page': {
+        label: '(marketing)/page.tsx',
+        prompt: 'What does the landing page for the map platform look like? What sections should it have?',
+      },
+      gallery: {
+        label: 'gallery',
+        prompt: 'What example maps should the gallery page show? How is it structured?',
+      },
+      'ai-route': {
+        label: 'api/ai/',
+        prompt: 'Design the api/ai/route.ts endpoint for the map platform. What does the request body look like, and what does it return?',
+      },
+      'export-route': {
+        label: 'api/export/',
+        prompt: 'Design the api/export/route.ts endpoint. How does it handle PNG and SVG export server-side?',
+      },
+      loading: {
+        label: 'loading.tsx',
+        prompt: 'What should the loading.tsx fallback look like for the map route group?',
+      },
+      error: {
+        label: 'error.tsx',
+        prompt: 'What should error.tsx handle for the map platform route groups?',
+      },
+      'not-found': {
+        label: 'not-found.tsx',
+        prompt: 'What does the not-found.tsx page look like for the map platform?',
+      },
+      'opengraph-image': {
+        label: 'opengraph-image',
+        prompt: 'What metadata and Open Graph tags should be in app/opengraph-image.tsx for sharing map links?',
+      },
+      sitemap: {
+        label: 'sitemap.ts',
+        prompt: 'What should sitemap.ts generate for the map platform?',
+      },
+    },
   },
   ai: {
     label: 'ai',
@@ -61,6 +150,33 @@ export const NODES: Record<NodeId, ArchNodeConfig> = {
     label: 'Tile provider',
     prompt:
       'How should tile provider support be architected for the map platform? How do we support PMTiles self-hosted, OSM, and optional Mapbox with a single clean interface?',
+    viewerKey: 'tile-provider',
+    children: {
+      'map-canvas': {
+        label: 'MapCanvas (consumer)',
+        prompt: 'How does the MapCanvas component consume the tile provider interface? Show me the React integration.',
+      },
+      'tile-provider-interface': {
+        label: 'TileProvider interface',
+        prompt: 'Show me the full TileProvider TypeScript interface for the map platform, including the TileSourceConfig type it returns.',
+      },
+      'pmtiles-provider': {
+        label: 'PMTilesProvider',
+        prompt: 'Show me the full PMTilesProvider implementation. How does it self-host tiles using the pmtiles protocol plugin for MapLibre?',
+      },
+      'osm-provider': {
+        label: 'OSMProvider',
+        prompt: 'Show me the OSMProvider implementation. What tile URL template and attribution string does it use?',
+      },
+      'mapbox-provider': {
+        label: 'MapboxProvider',
+        prompt: 'Show me the MapboxProvider implementation. How does it pull the API key from env and what style URLs does it support?',
+      },
+      'create-tile-provider': {
+        label: 'createTileProvider()',
+        prompt: 'Show me the createTileProvider factory function. How does it read NEXT_PUBLIC_TILE_PROVIDER and NEXT_PUBLIC_MAPBOX_TOKEN to pick the right provider?',
+      },
+    },
   },
   'browser-storage': {
     label: 'Browser storage',

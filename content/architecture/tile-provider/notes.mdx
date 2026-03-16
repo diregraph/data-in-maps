@@ -1,32 +1,122 @@
-# How should tile provider support be architected for the map platform? How do we support PMTiles self-hosted, OSM, and optional Mapbox with a single clean interface?
-
-## Overview
-
-_Placeholder — describe the tile provider abstraction: a single config object selects the active provider, and a resolver function returns the MapLibre style or source config for that provider._
+# Tile Provider
 
 ## Folder structure
 
 ```
-src/modules/map/
+modules/map/
 └── tile-providers/
-    ├── index.ts         # resolveTileProvider(config) → MapLibre source/style
-    ├── pmtiles.ts       # PMTiles protocol handler + source config
-    ├── osm.ts           # OSM raster tile source config
-    └── mapbox.ts        # Mapbox GL style URL builder (optional/env-gated)
+    ├── types.ts      # TileProvider interface + TileSourceConfig
+    ├── pmtiles.ts
+    ├── osm.ts
+    ├── mapbox.ts
+    └── factory.ts    # createTileProvider()
 ```
 
-## Key decisions
-
-- _Placeholder — e.g. how to gate Mapbox behind an env var, PMTiles protocol registration lifecycle, whether the provider config lives in the map store or a separate config file._
-
-## Interfaces
+## The interface
 
 ```ts
-// Placeholder
-export type TileProviderType = "pmtiles" | "osm" | "mapbox"
+// tile-providers/types.ts
+import type { SourceSpecification, StyleSpecification } from 'maplibre-gl'
 
-export interface TileProviderConfig {
-  type: TileProviderType
-  url?: string
+export interface TileSourceConfig {
+  style?: StyleSpecification         // full style doc (PMTiles, Mapbox)
+  rasterSource?: SourceSpecification // fallback for OSM raster
+  attribution: string
+}
+
+export interface TileProvider {
+  id: string
+  isReady(): boolean                 // false if required env var is missing
+  getConfig(): TileSourceConfig
 }
 ```
+
+## The three providers
+
+```ts
+// tile-providers/pmtiles.ts
+import { Protocol } from 'pmtiles'
+import maplibregl from 'maplibre-gl'
+
+export class PMTilesProvider implements TileProvider {
+  id = 'pmtiles'
+
+  static register() {
+    const protocol = new Protocol()
+    maplibregl.addProtocol('pmtiles', protocol.tile.bind(protocol))
+  }
+
+  isReady() { return true }
+
+  getConfig(): TileSourceConfig {
+    const url = process.env.NEXT_PUBLIC_PMTILES_URL ?? '/tiles/world.pmtiles'
+    return {
+      style: {
+        version: 8,
+        sources: { openmaptiles: { type: 'vector', url: `pmtiles://${url}` } },
+        layers: [],
+      },
+      attribution: '© OpenMapTiles © OpenStreetMap contributors',
+    }
+  }
+}
+```
+
+```ts
+// tile-providers/osm.ts
+export class OSMProvider implements TileProvider {
+  id = 'osm'
+  isReady() { return true }
+
+  getConfig(): TileSourceConfig {
+    return {
+      rasterSource: {
+        type: 'raster',
+        tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+        tileSize: 256,
+        maxzoom: 19,
+      },
+      attribution: '© OpenStreetMap contributors',
+    }
+  }
+}
+```
+
+```ts
+// tile-providers/mapbox.ts
+export class MapboxProvider implements TileProvider {
+  id = 'mapbox'
+  private token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
+
+  isReady() { return !!this.token }
+
+  getConfig(): TileSourceConfig {
+    if (!this.token) throw new Error('NEXT_PUBLIC_MAPBOX_TOKEN not set')
+    return {
+      style: {
+        version: 8,
+        sources: {},
+        layers: [],
+        // @ts-expect-error — MapLibre accepts Mapbox style URLs via compat layer
+        sprite: `mapbox://sprites/mapbox/streets-v12?access_token=${this.token}`,
+        glyphs: `mapbox://fonts/mapbox/{fontstack}/{range}?access_token=${this.token}`,
+      },
+      attribution: '© Mapbox © OpenStreetMap contributors',
+    }
+  }
+}
+```
+
+## Environment config
+
+```bash
+# .env.local
+NEXT_PUBLIC_TILE_PROVIDER=pmtiles           # pmtiles | osm | mapbox
+NEXT_PUBLIC_PMTILES_URL=/tiles/world.pmtiles
+NEXT_PUBLIC_MAPBOX_TOKEN=                   # leave blank → OSM fallback
+```
+
+## Adding a new provider
+
+Three steps: implement `TileProvider`, add it to the `PROVIDERS` map in `factory.ts`,
+document the env var. Nothing else changes.
