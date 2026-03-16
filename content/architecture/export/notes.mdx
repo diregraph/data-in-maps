@@ -1,35 +1,115 @@
-# Design the export module for the map platform. How should PNG, SVG, and embed link exports work? What does it need from the map and layers modules?
+# export
 
-## Overview
-
-_Placeholder — describe the export module: it reads from the map and layers modules to produce static image exports and shareable embed links._
+The `export` module handles three client-side export formats (PNG, SVG, embed link) and a server-side rendering route. It reads from the `map` module (canvas + viewport) and the `layers` module (layer configs) but never writes to either — export is a pure side-effect operation.
 
 ## Folder structure
 
 ```
 src/modules/export/
-├── index.ts             # barrel: exports exportPng, exportSvg, buildEmbedUrl
-├── png.ts               # MapLibre canvas → PNG blob via canvas.toBlob
-├── svg.ts               # SVG serialisation of current map state
-├── embed.ts             # serialise viewport + layers to URL-safe params
-└── types.ts             # ExportOptions, EmbedConfig
+├── index.ts                # barrel: useExport, ExportPanel
+├── types.ts                # ExportFormat, ExportOptions, ExportResult
+├── exporters/
+│   ├── png.ts              # canvas.toDataURL() → PNG blob
+│   ├── svg.ts              # GeoJSON features → SVG vector
+│   └── embed.ts            # viewport + layer config → shareable URL
+├── hooks/
+│   └── useExport.ts        # coordinates the three export flows
+└── components/
+    └── ExportPanel.tsx     # format picker + download trigger UI
+```
+
+## Key interfaces
+
+```ts
+export type ExportFormat = "png" | "svg" | "embed"
+
+export interface ExportOptions {
+  format: ExportFormat
+  filename?: string
+}
+
+export interface ExportResult {
+  format: ExportFormat
+  data: string   // data URL (PNG/SVG) or plain URL (embed)
+}
+```
+
+## useExport
+
+```ts
+export function useExport() {
+  const mapRef   = useMapStore((s) => s.mapRef)
+  const viewport = useMapStore((s) => s.viewport)
+  const layers   = useLayerStore((s) => s.layers)
+
+  async function exportMap(opts: ExportOptions): Promise<ExportResult> {
+    switch (opts.format) {
+      case "png":   return exportPng(mapRef)
+      case "svg":   return exportSvg(layers)
+      case "embed": return exportEmbed(viewport, layers)
+    }
+  }
+
+  return { exportMap }
+}
+```
+
+## Exporters
+
+**png.ts** — reads the WebGL canvas directly:
+```ts
+export async function exportPng(mapRef: MapRef): Promise<ExportResult> {
+  const canvas = mapRef.current?.getCanvas()
+  if (!canvas) throw new Error("map not ready")
+  // preserveDrawingBuffer must be true in MapCanvas for this to work
+  const data = canvas.toDataURL("image/png")
+  return { format: "png", data }
+}
+```
+
+**svg.ts** — vector-only export (no tile basemap):
+```ts
+export function exportSvg(layers: Layer[]): ExportResult {
+  const features = layers
+    .filter((l) => l.visible)
+    .flatMap((l) => geoJsonToSvgPaths(l))   // lib/geo.ts helper
+  const svg  = buildSvgDocument(features)
+  const data = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`
+  return { format: "svg", data }
+}
+```
+
+**embed.ts** — base64-encoded config URL:
+```ts
+export function exportEmbed(viewport: Viewport, layers: Layer[]): ExportResult {
+  const config = btoa(JSON.stringify({ viewport, layers }))
+  const data   = `${window.location.origin}/maps/embed?c=${config}`
+  return { format: "embed", data }
+}
+```
+
+## api/export route
+
+`app/api/export/route.ts` accepts `{ viewport, layers }` and renders a PNG server-side. Used for Open Graph image generation and permalink previews — not for user-initiated exports.
+
+```ts
+export async function POST(req: Request) {
+  const { viewport, layers } = await req.json()
+  const png = await renderMapHeadless(viewport, layers)
+  return new Response(png, { headers: { "Content-Type": "image/png" } })
+}
 ```
 
 ## Key decisions
 
-- _Placeholder — e.g. how to handle WebGL canvas cross-origin constraints for PNG, SVG fidelity limitations, embed link schema versioning._
+**Why client-side PNG via `canvas.toDataURL()` instead of always using the API route?**
+Client-side is instant, requires no server resources, and works offline. `preserveDrawingBuffer: true` must be set on the MapLibre instance or `toDataURL()` returns a blank image. The API route exists only for contexts without a WebGL canvas (OG images, server-side previews).
 
-## Interfaces
+**Why does SVG export omit the tile basemap?**
+Tile layers are raster and cannot be re-vectorized. SVG export targets print, Figma import, and further vector editing — the user's data layers are the value, not the background tiles.
 
-```ts
-// Placeholder
-export interface ExportOptions {
-  format: "png" | "svg"
-  width?: number
-  height?: number
-}
+**Why `btoa(JSON.stringify(...))` for embed links instead of query params?**
+Layer config can include complex structures (color maps, multi-field encodings). A single base64 blob is simpler to parse and immune to URL-encoding edge cases. The tradeoff is an opaque URL — acceptable for a share link, not for a public API.
 
-export interface EmbedConfig {
-  url: string
-}
-```
+**Why does the export module only read from `map` and `layers`, never write?**
+Export must never cause state changes that affect the canvas or layer stack. Read-only access enforces this at the architectural level. Any caching of export results belongs in local state inside `useExport`, not in the shared stores.

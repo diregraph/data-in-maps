@@ -52,6 +52,22 @@ export type MapNodeId =
   | 'use-fly-to'
   | 'use-layer-sync'
 
+export type ExportNodeId =
+  | 'export-panel'
+  | 'use-export'
+  | 'png-exporter'
+  | 'svg-exporter'
+  | 'embed-link'
+  | 'api-route'
+
+export type UiNodeId =
+  | 'theme'
+  | 'button'
+  | 'sheet'
+  | 'form'
+  | 'toast'
+  | 'custom'
+
 export interface ArchNodeConfig {
   label: string
   prompt: string
@@ -210,11 +226,65 @@ export const NODES: Record<NodeId, ArchNodeConfig> = {
     label: 'ui',
     prompt:
       'Design the ui module (design system) for the map platform. What shared components are needed at launch, and how should theming work?',
+    viewerKey: 'ui',
+    children: {
+      theme: {
+        label: 'theme.css',
+        prompt: 'Show me the full theme.css for the map platform. What CSS custom properties does shadcn require, and how is dark mode configured?',
+      },
+      button: {
+        label: 'Button',
+        prompt: 'Show me how Button (shadcn) is used across the map platform. What variants are needed and where is each used?',
+      },
+      sheet: {
+        label: 'Sheet',
+        prompt: 'Show me how Sheet (shadcn) is used as the primary sidebar container. How does LayerList, ExportPanel, and the AI chat use it?',
+      },
+      form: {
+        label: 'Form',
+        prompt: 'Show me the shadcn Form setup with react-hook-form and Zod. How does LayerEditor use Input, Select, and Slider for encoding config?',
+      },
+      toast: {
+        label: 'Sonner',
+        prompt: 'Show me the Sonner (shadcn) integration. How are toasts triggered from hooks for export success, AI errors, and save confirmations?',
+      },
+      custom: {
+        label: 'custom components',
+        prompt: 'Show me the custom platform-specific components not covered by shadcn: ColorRamp, EmptyState, and Spinner.',
+      },
+    },
   },
   export: {
     label: 'export',
     prompt:
       'Design the export module for the map platform. How should PNG, SVG, and embed link exports work? What does it need from the map and layers modules?',
+    viewerKey: 'export',
+    children: {
+      'export-panel': {
+        label: 'ExportPanel',
+        prompt: 'Show me the ExportPanel component. What format options does it expose and how does it trigger the export action?',
+      },
+      'use-export': {
+        label: 'useExport',
+        prompt: 'Show me the useExport hook. How does it read from the map and layers stores and delegate to the three client-side exporters?',
+      },
+      'png-exporter': {
+        label: 'png.ts',
+        prompt: 'Show me the PNG exporter. How does it read the MapLibre WebGL canvas and return a data URL? What constraint does preserveDrawingBuffer impose?',
+      },
+      'svg-exporter': {
+        label: 'svg.ts',
+        prompt: 'Show me the SVG exporter. How does it serialize GeoJSON layer features into SVG path elements without the tile basemap?',
+      },
+      'embed-link': {
+        label: 'embed.ts',
+        prompt: 'Show me the embed link exporter. How does it encode viewport and layer config into a shareable URL?',
+      },
+      'api-route': {
+        label: 'api/export/',
+        prompt: 'Show me the api/export/route.ts endpoint. How does it render a map PNG server-side for OG images and permalink previews?',
+      },
+    },
   },
   'claude-api': {
     label: 'Claude API',

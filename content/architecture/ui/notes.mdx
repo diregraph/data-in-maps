@@ -1,31 +1,111 @@
-# Design the ui module (design system) for the map platform. What shared components are needed at launch, and how should theming work?
+# ui
 
-## Overview
+The `ui` module is the platform's design system layer, built entirely on [shadcn/ui](https://ui.shadcn.com/) and Tailwind CSS v4. It owns color tokens, provides thin customizations on top of shadcn primitives, and adds the handful of platform-specific components shadcn doesn't cover.
 
-_Placeholder — describe the ui module as the platform's design system layer, built on top of shadcn/ui and Tailwind v4, providing shared components and tokens consumed by all features._
+**Key point:** shadcn components are copied into `src/components/ui/` — they're owned code, not a package dependency. Customize them directly in those files.
 
 ## Folder structure
 
 ```
-src/modules/ui/
-├── index.ts             # barrel: re-exports all shared components
-├── architecture/        # ArchitectureDiagram, NodeDetailPanel
+src/
 ├── components/
-│   ├── Spinner.tsx
-│   ├── ErrorBoundary.tsx
-│   └── EmptyState.tsx
-└── tokens.ts            # design tokens (colors, radii, spacing)
+│   └── ui/                    # shadcn-generated (owned, editable)
+│       ├── button.tsx
+│       ├── sheet.tsx
+│       ├── input.tsx
+│       ├── select.tsx
+│       ├── slider.tsx
+│       ├── label.tsx
+│       ├── form.tsx            # react-hook-form integration
+│       └── sonner.tsx          # Toaster wrapper
+│
+└── modules/ui/
+    ├── index.ts               # barrel: re-exports design system surface
+    ├── theme.css              # @layer base { :root { ... } } CSS custom properties
+    └── components/
+        ├── ColorRamp.tsx       # gradient swatch for choropleth preview
+        ├── EmptyState.tsx      # zero-data placeholder with icon + message
+        └── Spinner.tsx         # loading indicator for async boundaries
+```
+
+## Theme
+
+shadcn maps CSS custom properties through Tailwind's `@theme` directive. All tokens live in `theme.css`:
+
+```css
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --border: 240 5.9% 90%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    /* ... full shadcn dark token set */
+  }
+}
+```
+
+**Dark mode:** class-based (`.dark` on `<html>`), toggled server-side via `next-themes`. The platform defaults to dark — the map canvas blends better with a dark UI.
+
+## Adding shadcn components
+
+Always use the CLI — never copy-paste manually:
+
+```bash
+npx shadcn@latest add button sheet input select slider label form sonner
+```
+
+| Component | Used by |
+|-----------|---------|
+| `Button` | everywhere — primary actions, toolbar, dialogs |
+| `Sheet` | LayerList panel, ExportPanel, AI chat sidebar |
+| `Input / Select / Slider` | LayerEditor encoding config |
+| `Form` (react-hook-form) | LayerEditor — field binding + Zod validation |
+| `Sonner` | export success, AI errors, save confirmations |
+
+## Custom components
+
+Components that shadcn doesn't provide:
+
+**ColorRamp** — gradient swatch for choropleth scale preview:
+```tsx
+export function ColorRamp({ colors }: { colors: string[] }) {
+  const gradient = `linear-gradient(to right, ${colors.join(", ")})`
+  return <div className="h-4 w-full rounded" style={{ background: gradient }} />
+}
+```
+
+**EmptyState** — zero-data placeholder for LayerList and Gallery:
+```tsx
+export function EmptyState({ icon: Icon, title, description }: EmptyStateProps) {
+  return (
+    <div className="flex flex-col items-center gap-2 py-12 text-muted-foreground">
+      <Icon className="h-8 w-8" />
+      <p className="text-sm font-medium">{title}</p>
+      {description && <p className="text-xs">{description}</p>}
+    </div>
+  )
+}
 ```
 
 ## Key decisions
 
-- _Placeholder — e.g. how shadcn/ui components are extended vs. used as-is, dark mode approach, token strategy with Tailwind CSS variables._
+**Why shadcn over a component library package?**
+shadcn components are owned code in `src/components/ui/` — modifiable without forking a package. For a dark-first map platform with a distinct visual identity, this control is essential.
 
-## Interfaces
+**Why Sonner for toasts instead of shadcn's built-in Toast primitive?**
+shadcn now recommends Sonner as the default (`npx shadcn@latest add sonner`). It handles stacking, auto-dismiss, and promise-based toasts with less setup.
 
-```ts
-// Placeholder — shared prop shapes and token types
-export interface ThemeTokens {
-  // ...
-}
-```
+**Why `Sheet` for all sidebars?**
+Sheet provides overlay + focus-trap behaviour for accessible sidebars without custom implementation. The `side` prop (`left` | `right`) covers all panel placements in the map layout.
+
+**Why separate `modules/ui/components/` from `components/ui/`?**
+`src/components/ui/` is reserved for shadcn CLI output. Custom platform components go in `modules/ui/components/` to avoid confusion and prevent accidental overwrites on `npx shadcn@latest add`.

@@ -4,9 +4,11 @@ import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { ArchitectureDiagram } from "./ArchitectureDiagram"
 import { AppRouterDiagram } from "./app-router/AppRouterDiagram"
+import { ExportDiagram } from "./export/ExportDiagram"
 import { LayersDiagram } from "./layers/LayersDiagram"
 import { MapDiagram } from "./map/MapDiagram"
 import { TileProviderDiagram } from "./tile-provider/TileProviderDiagram"
+import { UiDiagram } from "./ui/UiDiagram"
 
 // Boundary type — specific ID unions are enforced inside each diagram component.
 // The cast below is intentional: the registry treats all diagrams generically.
@@ -19,9 +21,11 @@ type DiagramComponent = React.ComponentType<{
 const DIAGRAMS: Record<string, DiagramComponent> = {
   root:            ArchitectureDiagram as unknown as DiagramComponent,
   "app-router":    AppRouterDiagram    as unknown as DiagramComponent,
+  export:          ExportDiagram       as unknown as DiagramComponent,
   layers:          LayersDiagram       as unknown as DiagramComponent,
   map:             MapDiagram          as unknown as DiagramComponent,
   "tile-provider": TileProviderDiagram as unknown as DiagramComponent,
+  ui:              UiDiagram           as unknown as DiagramComponent,
 }
 
 interface DiagramViewerProps {
