@@ -11,8 +11,8 @@
 Refactor the architecture explorer from a single hardcoded diagram into a recursively composable system. Each node in the tree can optionally have its own sub-diagram. Navigating into a node shows that node's diagram (if it has one) or the nearest ancestor's diagram with the node highlighted. Depth is unbounded — adding a new diagram at any level requires touching exactly four places and nothing else.
 
 While building the infrastructure, fully implement two node pages:
-- **`app-router`** — 15 sub-nodes, SVG at `reference/app_router_structure.svg`
-- **`tile-provider`** — 6 sub-nodes, SVG at `reference/tile_provider_architecture.svg`
+- **`app-router`** — 15 sub-nodes, SVG at `content/architecture/app-router/app_router_structure.svg`
+- **`tile-provider`** — 6 sub-nodes, SVG at `content/architecture/tile-provider/tile_provider_architecture.svg`
 
 And one leaf-node page (notes only, no diagram):
 - **`tile-provider/create-tile-provider`** — factory implementation notes
@@ -405,7 +405,7 @@ Pattern: identical to `ArchitectureDiagram.tsx`. Study that file before writing 
 - `viewBox="0 0 680 500"`
 - `fontFamily` style on `<svg>`: `'"Anthropic Sans", -apple-system, "system-ui", "Segoe UI", sans-serif'`
 
-**NODE_BOUNDS** (extracted from `reference/app_router_structure.svg`):
+**NODE_BOUNDS** (extracted from `content/architecture/app-router/app_router_structure.svg`):
 
 ```typescript
 const NODE_BOUNDS: Record<AppRouterNodeId, { x: number; y: number; w: number; h: number }> = {
@@ -439,7 +439,7 @@ const NODE_BOUNDS: Record<AppRouterNodeId, { x: number; y: number; w: number; h:
 
 **Connector arrows color**: `stroke="rgba(222,220,209,0.3)"` `strokeWidth={1}` for the branch lines.
 
-**Structural layout** (translate directly from `reference/app_router_structure.svg`):
+**Structural layout** (translate directly from `content/architecture/app-router/app_router_structure.svg`):
 
 ```
 Row 1 (y=20):   layout (centered at x=340)
@@ -485,7 +485,7 @@ Same pattern as `AppRouterDiagram.tsx`.
 - `viewBox="0 0 680 384.56"`
 - All 6 nodes are clickable
 
-**NODE_BOUNDS** (from `reference/tile_provider_architecture.svg`):
+**NODE_BOUNDS** (from `content/architecture/tile-provider/tile_provider_architecture.svg`):
 
 ```typescript
 const NODE_BOUNDS: Record<TileProviderNodeId, { x: number; y: number; w: number; h: number }> = {
@@ -934,7 +934,8 @@ accept an explicit argument instead of reading env directly.
 
 ## Future node checklist
 
-When a node gets its own diagram, do exactly these four things:
+Use `/add-arch-node <node-path>` to run the automated workflow (see below).
+If doing it manually, touch exactly these four things:
 
 1. **Create** `src/modules/ui/architecture/[node-id]/[NodeId]Diagram.tsx`
    — JSX SVG, specific ID union type, `NODE_BOUNDS` record for spinner
@@ -945,5 +946,8 @@ When a node gets its own diagram, do exactly these four things:
 3. **Add** `viewerKey: "[node-id]"` and `children: { ... }` to that node in `nodes.ts`
 
 4. **Write** `content/architecture/[node-id]/notes.mdx`
+
+SVG source files live alongside the notes they describe:
+`content/architecture/[node-path]/[slug].svg`
 
 `ArchitecturePage.tsx` requires **no changes**.
